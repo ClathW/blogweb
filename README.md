@@ -1,6 +1,6 @@
 # BlogWeb
 
-全栈博客项目，后端使用 Django + DRF，前端使用 React + Vite。
+全栈博客项目，后端使用 Django + DRF，前端使用 Vue + Vite。
 
 ## 技术栈
 
@@ -9,7 +9,7 @@
 | 后端框架 | Django 6 + Django REST Framework |
 | 后端包管理 | uv |
 | Python 版本 | 3.12 |
-| 前端框架 | React + Vite |
+| 前端框架 | Vue 3 + Vite |
 | 前端包管理 | npm |
 
 ## 项目结构
@@ -22,7 +22,7 @@ blogweb/
 │   ├── pyproject.toml
 │   ├── uv.lock
 │   └── .env.example
-└── frontend/       # React 前端
+└── frontend/       # Vue 前端
     ├── src/
     ├── public/
     └── package.json
