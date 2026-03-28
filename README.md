@@ -122,3 +122,22 @@ npm run build
 # 预览生产包
 npm run preview
 ```
+
+## 协作流程
+
+本仓库 `main` 分支已开启保护规则，所有成员（Collaborator）不能直接 push，必须通过 Pull Request 合并。
+
+```bash
+# 1. 基于最新 main 创建新分支
+git checkout main && git pull
+git checkout -b 你的分支名
+
+# 2. 写代码并提交
+git add .
+git commit -m "描述你的改动"
+
+# 3. 推送分支到远程
+git push origin 你的分支名
+```
+
+然后在 GitHub 上创建 Pull Request，等待仓库管理员 Approve 后合并。
