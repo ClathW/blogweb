@@ -1,39 +1,51 @@
 # BlogWeb
 
-全栈博客项目，后端使用 Django + DRF，前端使用 Vue + Vite。
+全栈博客系统，基于 Django + DRF 和 Vue 3。
 
 ## 技术栈
 
-| 层级 | 技术 |
-|------|------|
-| 后端框架 | Django 6 + Django REST Framework |
+| 层 | 技术 |
+|---|---|
+| 后端 | Django 6 + Django REST Framework |
+| 前端 | Vue 3 + Vite |
+| 数据库 | SQLite（开发）/ MySQL 8.0 或 PostgreSQL 15（部署） |
 | 后端包管理 | uv |
-| Python 版本 | 3.12 |
-| 前端框架 | Vue 3 + Vite |
 | 前端包管理 | npm |
+
+## 功能
+
+- 用户注册、登录、个人信息管理
+- 文章发布、编辑、删除（软删除）、分类筛选、分页浏览
+- 文章评论
+- 管理员后台：用户管理、文章管理、评论管理
 
 ## 项目结构
 
 ```
 blogweb/
-├── backend/        # Django 后端
-│   ├── config/     # 项目配置（settings、urls、wsgi）
-│   ├── manage.py
-│   ├── pyproject.toml
-│   ├── uv.lock
-│   └── .env.example
-└── frontend/       # Vue 前端
-    ├── src/
-    ├── public/
-    └── package.json
+  dev.sh              # 一键启动脚本
+  backend/
+    config/           # Django 项目配置
+    users/            # 用户模块（User 模型、认证 API、管理命令）
+    articles/         # 文章模块（Article、Category 模型、文章 API）
+    comments/         # 评论模块（Comment 模型、评论 API）
+    manage.py
+  frontend/
+    src/
+      api/            # API 请求模块（auth、articles、comments、admin）
+      stores/         # Pinia 状态管理（auth）
+      router/         # Vue Router 路由配置
+      views/          # 页面组件
+      components/     # 可复用组件
 ```
 
 ## 环境要求
 
-- [uv](https://astral.sh/uv) — Python 包管理器
-- [Node.js](https://nodejs.org) >= 18
+- Python 3.12+
+- [uv](https://docs.astral.sh/uv/) — Python 包管理器
+- Node.js 20+
 
-### 安装 uv（未安装时）
+### 安装 uv
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -41,103 +53,107 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ## 快速开始
 
-### 1. 克隆仓库
+### 一键启动
 
 ```bash
-git clone <仓库地址>
-cd blogweb
+./dev.sh
 ```
 
-### 2. 配置后端
+首次运行会自动安装依赖、迁移数据库、创建默认管理员 `admin / admin123`。
+
+### 手动启动
+
+**后端：**
+
+```bash
+cd backend
+uv sync
+cp .env.example .env
+uv run python manage.py migrate
+uv run python manage.py initadmin
+uv run python manage.py runserver
+```
+
+**前端：**
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+浏览器访问 `http://localhost:5173`。
+
+## 创建管理员
 
 ```bash
 cd backend
 
-# 安装依赖（自动读取 uv.lock，版本完全一致）
-uv sync
+# 默认账号 admin / admin123
+uv run python manage.py initadmin
 
-# 配置环境变量
-cp .env.example .env
-# 用编辑器打开 .env，按需修改
+# 自定义
+uv run python manage.py initadmin --username myadmin --password mypass
 ```
 
-`.env` 各字段说明：
+## 运行测试
+
+```bash
+# 后端（74 个用例）
+cd backend && uv run python manage.py test
+
+# 前端（8 个用例）
+cd frontend && npm run test
+```
+
+## 环境变量
+
+`backend/.env` 中可配置：
 
 | 字段 | 说明 | 默认值 |
-|------|------|--------|
-| `SECRET_KEY` | Django 密钥，生产环境必须替换 | 内置不安全值 |
-| `DEBUG` | 调试模式，生产环境设为 `False` | `True` |
-| `ALLOWED_HOSTS` | 允许访问的域名，逗号分隔 | `localhost,127.0.0.1` |
-| `CORS_ALLOWED_ORIGINS` | 允许跨域的前端地址，逗号分隔 | `http://localhost:3000,http://127.0.0.1:3000` |
+|---|---|---|
+| `SECRET_KEY` | Django 密钥 | 内置值（仅开发） |
+| `DEBUG` | 调试模式 | `True` |
+| `ALLOWED_HOSTS` | 允许访问的域名（逗号分隔） | `localhost,127.0.0.1` |
+| `CORS_ALLOWED_ORIGINS` | 允许跨域的前端地址 | `http://localhost:5173` |
 
-```bash
-# 初始化数据库
-uv run python manage.py migrate
+## API 概览
 
-# 启动开发服务器
-uv run python manage.py runserver
-# → http://localhost:8000
-```
-
-### 3. 配置前端
-
-```bash
-cd frontend
-
-# 安装依赖
-npm install
-
-# 启动开发服务器
-npm run dev
-# → http://localhost:5173
-```
-
-## 常用命令
-
-### 后端
-
-```bash
-# 创建超级用户（用于登录 Django Admin）
-uv run python manage.py createsuperuser
-
-# 新增 app
-uv run python manage.py startapp <app名>
-
-# 生成数据库迁移文件
-uv run python manage.py makemigrations
-
-# 执行迁移
-uv run python manage.py migrate
-
-# 添加依赖
-uv add <包名>
-```
-
-### 前端
-
-```bash
-# 构建生产包
-npm run build
-
-# 预览生产包
-npm run preview
-```
+| 方法 | 路径 | 说明 | 认证 |
+|---|---|---|---|
+| POST | `/api/auth/register/` | 用户注册 | - |
+| POST | `/api/auth/login/` | 用户登录 | - |
+| POST | `/api/auth/logout/` | 用户登出 | Session |
+| GET | `/api/auth/check/` | 登录状态检查 | Session |
+| GET | `/api/user/profile/` | 获取个人信息 | Session |
+| PUT | `/api/user/profile/` | 修改个人信息 | Session |
+| PUT | `/api/user/password/` | 修改密码 | Session |
+| GET | `/api/articles/` | 文章列表 | - |
+| POST | `/api/articles/create/` | 发布文章 | Session |
+| GET | `/api/articles/{id}/` | 文章详情 | - |
+| PUT | `/api/articles/{id}/edit/` | 编辑文章 | Session |
+| DELETE | `/api/articles/{id}/edit/` | 删除文章 | Session |
+| GET | `/api/articles/my/` | 我的文章 | Session |
+| GET | `/api/articles/{id}/comments/` | 文章评论列表 | - |
+| POST | `/api/articles/{id}/comments/create/` | 发表评论 | Session |
+| DELETE | `/api/comments/{id}/` | 删除评论 | Session |
+| GET | `/api/categories/` | 分类列表 | - |
+| GET | `/api/admin/users/` | 用户管理列表 | Admin |
+| PUT | `/api/admin/users/{id}/status/` | 用户状态变更 | Admin |
+| GET | `/api/admin/articles/` | 文章管理列表 | Admin |
+| DELETE | `/api/admin/articles/{id}/` | 强制删除文章 | Admin |
+| GET | `/api/admin/comments/` | 评论管理列表 | Admin |
+| DELETE | `/api/admin/comments/{id}/` | 强制删除评论 | Admin |
 
 ## 协作流程
 
-本仓库 `main` 分支已开启保护规则，所有成员（Collaborator）不能直接 push，必须通过 Pull Request 合并。
+`main` 分支受保护，需通过 Pull Request 提交：
 
 ```bash
-# 1. 基于最新 main 创建新分支
 git checkout main && git pull
-git checkout -b 你的分支名
-
-# 2. 写代码并提交
-git add .
-git commit -m "描述你的改动"
-
-# 3. 推送分支到远程
-git push origin 你的分支名
+git checkout -b 分支名
+# 开发、提交
+git push origin 分支名
 ```
 
-然后在 GitHub 上创建 Pull Request，等待仓库管理员 Approve 后合并。
+然后在 GitHub 创建 Pull Request 等待合并。
