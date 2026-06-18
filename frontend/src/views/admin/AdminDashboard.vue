@@ -2,15 +2,15 @@
   <div class="admin-dashboard">
     <h2>后台管理</h2>
     <div class="dashboard-grid">
-      <router-link to="/admin/users" class="dashboard-card">
+      <router-link to="/manage/users" class="dashboard-card">
         <h3>用户管理</h3>
         <p>查看和管理注册用户，变更用户状态</p>
       </router-link>
-      <router-link to="/admin/articles" class="dashboard-card">
+      <router-link to="/manage/articles" class="dashboard-card">
         <h3>文章管理</h3>
         <p>查看全站文章，处理违规内容</p>
       </router-link>
-      <router-link to="/admin/comments" class="dashboard-card">
+      <router-link to="/manage/comments" class="dashboard-card">
         <h3>评论管理</h3>
         <p>查看全站评论，删除违规评论</p>
       </router-link>

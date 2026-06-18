@@ -1,6 +1,12 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
 from django.db import models
 from django.utils import timezone
+
+
+class UserManager(DjangoUserManager):
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
+        extra_fields.setdefault('role', 'admin')
+        return super().create_superuser(username, email, password, **extra_fields)
 
 
 class User(AbstractUser):
@@ -19,6 +25,8 @@ class User(AbstractUser):
     avatar = models.URLField(max_length=255, blank=True, default='', verbose_name='头像URL')
     failed_login_attempts = models.IntegerField(default=0, verbose_name='连续登录失败次数')
     locked_until = models.DateTimeField(null=True, blank=True, verbose_name='锁定至')
+
+    objects = UserManager()
 
     class Meta:
         db_table = 'users'

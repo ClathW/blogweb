@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
 from rest_framework.test import APIClient
 from rest_framework import status
 
@@ -18,11 +19,9 @@ class UserModelTests(TestCase):
 
     def test_create_superuser(self):
         user = User.objects.create_superuser(username='admin', password='admin123', email='admin@example.com')
-        self.assertEqual(user.role, 'user')  # create_superuser doesn't auto-set role
-        user.role = 'admin'
-        user.save()
         self.assertEqual(user.role, 'admin')
         self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
 
     def test_user_str(self):
         user = User.objects.create_user(username='testuser', password='test123456')
@@ -152,6 +151,13 @@ class AuthAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertTrue(res.data['is_authenticated'])
 
+    def test_check_auth_marks_staff_as_admin(self):
+        user = User.objects.create_user(username='staffuser', password='test123456', is_staff=True)
+        self.client.force_authenticate(user=user)
+        res = self.client.get(self.check_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['user']['role'], 'admin')
+
     def test_check_auth_unauthenticated(self):
         res = self.client.get(self.check_url)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
@@ -224,6 +230,12 @@ class AdminAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertGreaterEqual(res.data['count'], 2)
 
+    def test_staff_user_can_list_users(self):
+        staff_user = User.objects.create_user(username='staff', password='staff123', is_staff=True)
+        self.client.force_authenticate(user=staff_user)
+        res = self.client.get('/api/admin/users/')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
     def test_admin_list_users_forbidden(self):
         self.client.force_authenticate(user=self.normal_user)
         res = self.client.get('/api/admin/users/')
@@ -263,3 +275,11 @@ class AdminAPITests(TestCase):
         res = self.client.get('/api/admin/users/?status=active')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertGreaterEqual(res.data['count'], 2)
+
+    def test_initadmin_promotes_existing_user(self):
+        user = User.objects.create_user(username='existing-admin', password='admin123', role='user')
+        call_command('initadmin', username='existing-admin', password='admin123', email='admin@example.com')
+        user.refresh_from_db()
+        self.assertEqual(user.role, 'admin')
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)

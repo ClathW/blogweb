@@ -23,7 +23,7 @@ async function handleLogout() {
           <router-link to="/profile" class="user-link">
             {{ auth.user?.username }}
           </router-link>
-          <router-link v-if="auth.isAdmin" to="/admin" class="admin-link">后台</router-link>
+          <router-link v-if="auth.isAdmin" to="/manage" class="admin-link">管理</router-link>
           <a href="#" @click.prevent="handleLogout" class="logout-link">退出</a>
         </template>
         <template v-else>

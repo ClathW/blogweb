@@ -139,7 +139,7 @@ docker compose --env-file .env.production up -d
 
 | 服务 | 说明 |
 |---|---|
-| `nginx` | 托管 Vue 静态文件，并反代 `/api/`、`/admin/` |
+| `nginx` | 托管 Vue 静态文件，并反代 `/api/`、`/django-admin/` |
 | `backend` | Django + Gunicorn |
 | `db` | PostgreSQL |
 

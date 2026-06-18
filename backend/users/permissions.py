@@ -19,5 +19,9 @@ class IsActiveAdmin(BasePermission):
             user
             and user.is_authenticated
             and getattr(user, 'status', 'active') == 'active'
-            and getattr(user, 'role', None) == 'admin'
+            and (
+                getattr(user, 'role', None) == 'admin'
+                or getattr(user, 'is_staff', False)
+                or getattr(user, 'is_superuser', False)
+            )
         )

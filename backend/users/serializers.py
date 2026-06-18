@@ -98,10 +98,17 @@ class LoginSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    role = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'role', 'status', 'bio', 'avatar', 'date_joined']
         read_only_fields = ['id', 'username', 'email', 'role', 'status', 'date_joined']
+
+    def get_role(self, obj):
+        if obj.role == 'admin' or obj.is_staff or obj.is_superuser:
+            return 'admin'
+        return 'user'
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

@@ -81,7 +81,12 @@ class ArticleEditView(APIView):
     permission_classes = [IsActiveAuthenticated]
 
     def _check_permission(self, article, user):
-        return user == article.author or user.role == 'admin'
+        return (
+            user == article.author
+            or user.role == 'admin'
+            or user.is_staff
+            or user.is_superuser
+        )
 
     def put(self, request, pk):
         article = get_object_or_404(Article, pk=pk, is_deleted=False)
