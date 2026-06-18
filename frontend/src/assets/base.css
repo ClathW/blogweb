@@ -2,6 +2,11 @@
   --c-bg: #f4f7fb;
   --c-bg-soft: #f8fbff;
   --c-bg-card: rgba(255, 255, 255, 0.88);
+  --c-nav-bg: rgba(248, 251, 255, 0.84);
+  --c-control-bg: #ffffff;
+  --c-table-head: rgba(219, 234, 254, 0.5);
+  --c-card-shine: rgba(255, 255, 255, 0.86);
+  --c-overlay: rgba(31, 41, 51, 0.36);
   --c-text: #1f2933;
   --c-text-secondary: #5d6978;
   --c-text-muted: #8a96a6;
@@ -29,29 +34,34 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --c-bg: #111827;
-    --c-bg-soft: #172033;
-    --c-bg-card: rgba(31, 41, 55, 0.88);
-    --c-text: #e5e7eb;
-    --c-text-secondary: #b6c2d1;
-    --c-text-muted: #8b98aa;
-    --c-primary: #60a5fa;
-    --c-primary-hover: #93c5fd;
-    --c-primary-soft: rgba(37, 99, 235, 0.22);
-    --c-accent: #a78bfa;
-    --c-accent-soft: rgba(124, 58, 237, 0.2);
-    --c-border: rgba(148, 163, 184, 0.22);
-    --c-border-strong: rgba(203, 213, 225, 0.24);
+    --c-bg-soft: #162033;
+    --c-bg-card: rgba(17, 24, 39, 0.88);
+    --c-nav-bg: rgba(10, 18, 32, 0.86);
+    --c-control-bg: #0f172a;
+    --c-table-head: rgba(37, 99, 235, 0.18);
+    --c-card-shine: rgba(148, 163, 184, 0.08);
+    --c-overlay: rgba(2, 6, 23, 0.68);
+    --c-text: #e6edf7;
+    --c-text-secondary: #aebed2;
+    --c-text-muted: #7f8da3;
+    --c-primary: #7db7ff;
+    --c-primary-hover: #a9d0ff;
+    --c-primary-soft: rgba(59, 130, 246, 0.18);
+    --c-accent: #9fb6ff;
+    --c-accent-soft: rgba(99, 102, 241, 0.18);
+    --c-border: rgba(148, 163, 184, 0.18);
+    --c-border-strong: rgba(191, 219, 254, 0.22);
     --c-danger: #f87171;
     --c-danger-soft: rgba(220, 38, 38, 0.18);
     --c-success: #4ade80;
     --c-success-soft: rgba(22, 163, 74, 0.18);
     --c-warning: #fbbf24;
     --c-warning-soft: rgba(217, 119, 6, 0.2);
-    --c-bg-glow-primary: rgba(37, 99, 235, 0.18);
-    --c-bg-glow-accent: rgba(79, 70, 229, 0.16);
-    --c-grid-line: rgba(226, 232, 240, 0.045);
-    --shadow: 0 12px 34px rgba(0, 0, 0, 0.26);
-    --shadow-md: 0 18px 50px rgba(0, 0, 0, 0.34);
+    --c-bg-glow-primary: rgba(37, 99, 235, 0.22);
+    --c-bg-glow-accent: rgba(14, 165, 233, 0.12);
+    --c-grid-line: rgba(226, 232, 240, 0.032);
+    --shadow: 0 14px 36px rgba(0, 0, 0, 0.32);
+    --shadow-md: 0 20px 54px rgba(0, 0, 0, 0.42);
   }
 }
 
@@ -103,4 +113,11 @@ button {
 
 input, textarea, select {
   font-family: inherit;
+  background: var(--c-control-bg);
+  color: var(--c-text);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--c-text-muted);
 }

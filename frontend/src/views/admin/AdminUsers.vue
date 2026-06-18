@@ -157,7 +157,7 @@ onMounted(fetchUsers)
 }
 
 .data-table th {
-  background: rgba(219, 234, 254, 0.5);
+  background: var(--c-table-head);
   color: var(--c-text-secondary);
   font-weight: 700;
 }
@@ -169,7 +169,7 @@ onMounted(fetchUsers)
   padding: 0.25rem 0.75rem;
   border: 1px solid var(--c-border);
   border-radius: 4px;
-  background: #fff;
+  background: var(--c-control-bg);
   cursor: pointer;
   font-size: 0.8rem;
 }

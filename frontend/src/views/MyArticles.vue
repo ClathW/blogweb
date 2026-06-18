@@ -130,7 +130,7 @@ onMounted(fetchArticles)
 }
 
 .article-table th {
-  background: rgba(219, 234, 254, 0.5);
+  background: var(--c-table-head);
   color: var(--c-text-secondary);
   font-weight: 700;
 }
@@ -142,7 +142,7 @@ onMounted(fetchArticles)
 .status-published { background: var(--c-success-soft); color: var(--c-success); }
 .status-draft { background: var(--c-warning-soft); color: var(--c-warning); }
 .status-taken_down { background: var(--c-danger-soft); color: var(--c-danger); }
-.status-archived { background: #eef2f4; color: var(--c-text-secondary); }
+.status-archived { background: var(--c-primary-soft); color: var(--c-text-secondary); }
 
 .actions { display: flex; gap: 0.5rem; }
 

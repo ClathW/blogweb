@@ -207,7 +207,7 @@ onMounted(() => {
 .confirm-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(31, 41, 51, 0.36);
+  background: var(--c-overlay);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -237,7 +237,7 @@ onMounted(() => {
   padding: 0.5rem 1rem;
   border: 1px solid var(--c-border);
   border-radius: 6px;
-  background: #fff;
+  background: var(--c-control-bg);
   cursor: pointer;
 }
 

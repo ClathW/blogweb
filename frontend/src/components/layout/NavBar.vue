@@ -37,14 +37,14 @@ async function handleLogout() {
 
 <style scoped>
 .navbar {
-  background: rgba(251, 250, 247, 0.82);
+  background: var(--c-nav-bg);
   border-bottom: 1px solid var(--c-border);
   padding: 0 1.25rem;
   position: sticky;
   top: 0;
   z-index: 100;
   backdrop-filter: blur(18px);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
+  box-shadow: 0 1px 0 var(--c-card-shine);
 }
 
 .nav-container {

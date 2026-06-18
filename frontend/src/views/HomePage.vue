@@ -125,7 +125,7 @@ onMounted(() => {
   padding: 2rem;
   border: 1px solid var(--c-border);
   border-radius: var(--radius);
-  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(219,234,254,0.78));
+  background: linear-gradient(135deg, var(--c-bg-card), var(--c-primary-soft));
   box-shadow: var(--shadow);
 }
 
@@ -157,7 +157,7 @@ onMounted(() => {
   padding: 0.4rem 0.85rem;
   border: 1px solid var(--c-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.76);
+  background: var(--c-control-bg);
   cursor: pointer;
   font-size: 0.85rem;
   color: var(--c-text-secondary);
@@ -183,7 +183,7 @@ onMounted(() => {
   border-radius: var(--radius);
   padding: 1.35rem 1.5rem;
   margin-bottom: 1rem;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.86);
+  box-shadow: 0 1px 0 var(--c-card-shine);
   transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
