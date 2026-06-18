@@ -150,6 +150,12 @@ class AuthAPITests(TestCase):
         res = self.client.get(self.check_url)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_disabled_authenticated_user_is_forbidden(self):
+        user = User.objects.create_user(username='disabledauth', password='test123456', status='disabled')
+        self.client.force_authenticate(user=user)
+        res = self.client.get(self.profile_url)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_get_profile(self):
         user = User.objects.create_user(username='profileuser', password='test123456', email='p@example.com')
         self.client.force_authenticate(user=user)
@@ -240,6 +246,11 @@ class AdminAPITests(TestCase):
         res = self.client.get('/api/admin/users/?keyword=normal')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['count'], 1)
+
+    def test_admin_list_users_rejects_invalid_pagination(self):
+        self.client.force_authenticate(user=self.admin)
+        res = self.client.get('/api/admin/users/?page=abc')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_admin_filter_users_by_status(self):
         self.client.force_authenticate(user=self.admin)

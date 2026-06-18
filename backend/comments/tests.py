@@ -112,6 +112,32 @@ class CommentAPITests(TestCase):
         res = self.client.get(f'/api/articles/{self.article.id}/comments/')
         self.assertEqual(len(res.data), 1)
 
+    def test_list_comments_excludes_deleted_replies(self):
+        parent = Comment.objects.create(content='Parent', article=self.article, user=self.user)
+        Comment.objects.create(content='Visible reply', article=self.article, user=self.user, parent=parent)
+        Comment.objects.create(
+            content='Deleted reply',
+            article=self.article,
+            user=self.user,
+            parent=parent,
+            is_deleted=True,
+        )
+        res = self.client.get(f'/api/articles/{self.article.id}/comments/')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data[0]['replies']), 1)
+        self.assertEqual(res.data[0]['replies'][0]['content'], 'Visible reply')
+
+    def test_list_comments_excludes_unpublished_article(self):
+        draft = Article.objects.create(
+            title='Draft',
+            content='Content',
+            author=self.user,
+            category=self.category,
+            status='draft',
+        )
+        res = self.client.get(f'/api/articles/{draft.id}/comments/')
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_delete_own_comment(self):
         comment = Comment.objects.create(content='My comment', article=self.article, user=self.user)
         self.client.force_authenticate(user=self.user)
@@ -164,6 +190,11 @@ class CommentAPITests(TestCase):
         self.client.force_authenticate(user=self.user)
         res = self.client.get('/api/admin/comments/')
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_admin_list_comments_rejects_invalid_pagination(self):
+        self.client.force_authenticate(user=self.admin)
+        res = self.client.get('/api/admin/comments/?page_size=0')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_admin_delete_comment(self):
         comment = Comment.objects.create(content='Bad comment', article=self.article, user=self.user)

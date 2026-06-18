@@ -118,11 +118,20 @@ class ArticleAPITests(TestCase):
         res = self.client.get('/api/articles/99999/')
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_article_detail_excludes_unpublished(self):
+        article = self._create_article('Draft Detail', status='draft')
+        res = self.client.get(f'/api/articles/{article.id}/')
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_article_detail_increments_view_count(self):
         article = self._create_article('View Article')
         self.client.get(f'/api/articles/{article.id}/')
         article.refresh_from_db()
         self.assertEqual(article.view_count, 1)
+
+    def test_list_articles_rejects_invalid_pagination(self):
+        res = self.client.get('/api/articles/?page=abc&page_size=0')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_article_authenticated(self):
         self.client.force_authenticate(user=self.user)
@@ -225,6 +234,11 @@ class ArticleAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['count'], 2)
 
+    def test_my_articles_rejects_invalid_pagination(self):
+        self.client.force_authenticate(user=self.user)
+        res = self.client.get('/api/articles/my/?page_size=0')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_category_list(self):
         res = self.client.get('/api/categories/')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -242,6 +256,11 @@ class ArticleAPITests(TestCase):
         self.client.force_authenticate(user=self.user)
         res = self.client.get('/api/admin/articles/')
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_admin_article_list_rejects_invalid_pagination(self):
+        self.client.force_authenticate(user=self.admin)
+        res = self.client.get('/api/admin/articles/?page=-1')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_admin_delete_article(self):
         article = self._create_article('Admin Delete Test')

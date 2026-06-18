@@ -1,10 +1,12 @@
 from rest_framework import status
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
+from config.pagination import paginate_queryset, parse_pagination
+from users.permissions import IsActiveAdmin, IsActiveAuthenticated
 from .models import Article, Category
 from .serializers import (
     ArticleCreateSerializer,
@@ -29,8 +31,7 @@ class ArticleListView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        page = int(request.query_params.get('page', 1))
-        page_size = int(request.query_params.get('page_size', 10))
+        page, page_size = parse_pagination(request.query_params)
         category_id = request.query_params.get('category')
 
         queryset = Article.objects.filter(status='published', is_deleted=False)
@@ -38,21 +39,10 @@ class ArticleListView(APIView):
         if category_id:
             queryset = queryset.filter(category_id=category_id)
 
-        total = queryset.count()
-        total_pages = max(1, (total + page_size - 1) // page_size)
-
-        start = (page - 1) * page_size
-        end = start + page_size
-        articles = queryset[start:end]
+        articles, pagination = paginate_queryset(queryset, page, page_size)
 
         serializer = ArticleListSerializer(articles, many=True)
-        return Response({
-            'count': total,
-            'page': page,
-            'page_size': page_size,
-            'total_pages': total_pages,
-            'results': serializer.data,
-        })
+        return Response({**pagination, 'results': serializer.data})
 
 
 class ArticleDetailView(APIView):
@@ -60,7 +50,7 @@ class ArticleDetailView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, pk):
-        article = get_object_or_404(Article, pk=pk, is_deleted=False)
+        article = get_object_or_404(Article, pk=pk, status='published', is_deleted=False)
         # 增加浏览次数
         article.view_count += 1
         article.save(update_fields=['view_count'])
@@ -70,7 +60,7 @@ class ArticleDetailView(APIView):
 
 class ArticleCreateView(APIView):
     """发布文章"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsActiveAuthenticated]
 
     def post(self, request):
         serializer = ArticleCreateSerializer(data=request.data, context={'request': request})
@@ -88,7 +78,7 @@ class ArticleCreateView(APIView):
 
 class ArticleEditView(APIView):
     """编辑与删除文章（作者或管理员）"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsActiveAuthenticated]
 
     def _check_permission(self, article, user):
         return user == article.author or user.role == 'admin'
@@ -122,42 +112,26 @@ class ArticleEditView(APIView):
 
 class MyArticlesView(APIView):
     """当前用户的文章列表"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsActiveAuthenticated]
 
     def get(self, request):
-        page = int(request.query_params.get('page', 1))
-        page_size = int(request.query_params.get('page_size', 10))
+        page, page_size = parse_pagination(request.query_params)
 
         queryset = Article.objects.filter(author=request.user, is_deleted=False)
-        total = queryset.count()
-        total_pages = max(1, (total + page_size - 1) // page_size)
-
-        start = (page - 1) * page_size
-        end = start + page_size
-        articles = queryset[start:end]
+        articles, pagination = paginate_queryset(queryset, page, page_size)
 
         serializer = ArticleListSerializer(articles, many=True)
-        return Response({
-            'count': total,
-            'page': page,
-            'page_size': page_size,
-            'total_pages': total_pages,
-            'results': serializer.data,
-        })
+        return Response({**pagination, 'results': serializer.data})
 
 
 # ===== 后台管理 Views =====
 
 class AdminArticleListView(APIView):
     """后台文章管理列表"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsActiveAdmin]
 
     def get(self, request):
-        if request.user.role != 'admin':
-            return Response({'message': '无权访问'}, status=status.HTTP_403_FORBIDDEN)
-
-        page = int(request.query_params.get('page', 1))
-        page_size = int(request.query_params.get('page_size', 10))
+        page, page_size = parse_pagination(request.query_params)
         keyword = request.query_params.get('keyword', '')
         category_id = request.query_params.get('category', '')
 
@@ -168,31 +142,17 @@ class AdminArticleListView(APIView):
         if category_id:
             queryset = queryset.filter(category_id=category_id)
 
-        total = queryset.count()
-        total_pages = max(1, (total + page_size - 1) // page_size)
-
-        start = (page - 1) * page_size
-        end = start + page_size
-        articles = queryset[start:end]
+        articles, pagination = paginate_queryset(queryset, page, page_size)
 
         serializer = ArticleListSerializer(articles, many=True)
-        return Response({
-            'count': total,
-            'page': page,
-            'page_size': page_size,
-            'total_pages': total_pages,
-            'results': serializer.data,
-        })
+        return Response({**pagination, 'results': serializer.data})
 
 
 class AdminArticleDeleteView(APIView):
     """后台强制删除文章"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsActiveAdmin]
 
     def delete(self, request, pk):
-        if request.user.role != 'admin':
-            return Response({'message': '无权操作'}, status=status.HTTP_403_FORBIDDEN)
-
         article = get_object_or_404(Article, pk=pk, is_deleted=False)
         article.is_deleted = True
         article.save(update_fields=['is_deleted'])

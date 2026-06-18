@@ -1,11 +1,13 @@
-from django.db.models import Q
+from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from articles.models import Article
+from config.pagination import paginate_queryset, parse_pagination
+from users.permissions import IsActiveAdmin, IsActiveAuthenticated
 from .models import Comment
 from .serializers import CommentCreateSerializer, CommentListSerializer, CommentSerializer
 
@@ -15,11 +17,17 @@ class ArticleCommentListView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, article_id):
-        article = get_object_or_404(Article, pk=article_id, is_deleted=False)
+        article = get_object_or_404(Article, pk=article_id, status='published', is_deleted=False)
         # 获取顶层评论（无父评论），预加载回复
         comments = Comment.objects.filter(
             article=article, parent=None, is_deleted=False
-        ).prefetch_related('replies').order_by('created_at')
+        ).prefetch_related(
+            Prefetch(
+                'replies',
+                queryset=Comment.objects.filter(is_deleted=False).order_by('created_at'),
+                to_attr='prefetched_replies',
+            )
+        ).order_by('created_at')
 
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
@@ -27,7 +35,7 @@ class ArticleCommentListView(APIView):
 
 class CommentCreateView(APIView):
     """发表评论"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsActiveAuthenticated]
 
     def post(self, request, article_id):
         article = get_object_or_404(Article, pk=article_id, status='published', is_deleted=False)
@@ -56,7 +64,7 @@ class CommentCreateView(APIView):
 
 class CommentDeleteView(APIView):
     """删除评论（本人或管理员）"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsActiveAuthenticated]
 
     def delete(self, request, pk):
         comment = get_object_or_404(Comment, pk=pk, is_deleted=False)
@@ -82,14 +90,10 @@ class CommentDeleteView(APIView):
 
 class AdminCommentListView(APIView):
     """后台评论管理列表"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsActiveAdmin]
 
     def get(self, request):
-        if request.user.role != 'admin':
-            return Response({'message': '无权访问'}, status=status.HTTP_403_FORBIDDEN)
-
-        page = int(request.query_params.get('page', 1))
-        page_size = int(request.query_params.get('page_size', 10))
+        page, page_size = parse_pagination(request.query_params)
         keyword = request.query_params.get('keyword', '')
         article_id = request.query_params.get('article_id', '')
 
@@ -100,31 +104,17 @@ class AdminCommentListView(APIView):
         if article_id:
             queryset = queryset.filter(article_id=article_id)
 
-        total = queryset.count()
-        total_pages = max(1, (total + page_size - 1) // page_size)
-
-        start = (page - 1) * page_size
-        end = start + page_size
-        comments = queryset[start:end]
+        comments, pagination = paginate_queryset(queryset, page, page_size)
 
         serializer = CommentListSerializer(comments, many=True)
-        return Response({
-            'count': total,
-            'page': page,
-            'page_size': page_size,
-            'total_pages': total_pages,
-            'results': serializer.data,
-        })
+        return Response({**pagination, 'results': serializer.data})
 
 
 class AdminCommentDeleteView(APIView):
     """后台强制删除评论"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsActiveAdmin]
 
     def delete(self, request, pk):
-        if request.user.role != 'admin':
-            return Response({'message': '无权操作'}, status=status.HTTP_403_FORBIDDEN)
-
         comment = get_object_or_404(Comment, pk=pk, is_deleted=False)
         comment.is_deleted = True
         comment.save(update_fields=['is_deleted'])

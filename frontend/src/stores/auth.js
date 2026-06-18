@@ -5,6 +5,7 @@ import * as authApi from '@/api/auth'
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
   const loading = ref(false)
+  const initialized = ref(false)
 
   const isLoggedIn = computed(() => !!user.value)
   const isAdmin = computed(() => user.value?.role === 'admin')
@@ -20,6 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
       return false
     } finally {
       loading.value = false
+      initialized.value = true
     }
   }
 
@@ -59,6 +61,7 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     user,
     loading,
+    initialized,
     isLoggedIn,
     isAdmin,
     checkAuth,

@@ -1,4 +1,4 @@
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, update_session_auth_hash
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from rest_framework import status
@@ -6,9 +6,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from django.db.models import Q
-
+from config.pagination import paginate_queryset, parse_pagination
 from .models import User
+from .permissions import IsActiveAdmin, IsActiveAuthenticated
 from .serializers import (
     LoginSerializer,
     PasswordChangeSerializer,
@@ -74,7 +74,7 @@ class LogoutView(APIView):
 
 class UserProfileView(APIView):
     """个人信息查看与修改"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsActiveAuthenticated]
 
     def get(self, request):
         serializer = UserSerializer(request.user)
@@ -96,7 +96,7 @@ class UserProfileView(APIView):
 
 class PasswordChangeView(APIView):
     """修改密码"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsActiveAuthenticated]
 
     def put(self, request):
         serializer = PasswordChangeSerializer(data=request.data, context={'request': request})
@@ -104,6 +104,7 @@ class PasswordChangeView(APIView):
             user = request.user
             user.set_password(serializer.validated_data['new_password'])
             user.save()
+            update_session_auth_hash(request, user)
             return Response({'message': '密码修改成功'})
         return Response({
             'message': '请求参数有误',
@@ -113,7 +114,7 @@ class PasswordChangeView(APIView):
 
 class UserCheckView(APIView):
     """检查当前登录状态"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsActiveAuthenticated]
 
     def get(self, request):
         return Response({
@@ -126,14 +127,10 @@ class UserCheckView(APIView):
 
 class AdminUserListView(APIView):
     """后台用户列表"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsActiveAdmin]
 
     def get(self, request):
-        if request.user.role != 'admin':
-            return Response({'message': '无权访问'}, status=status.HTTP_403_FORBIDDEN)
-
-        page = int(request.query_params.get('page', 1))
-        page_size = int(request.query_params.get('page_size', 10))
+        page, page_size = parse_pagination(request.query_params)
         keyword = request.query_params.get('keyword', '')
         user_status = request.query_params.get('status', '')
 
@@ -144,29 +141,17 @@ class AdminUserListView(APIView):
         if user_status:
             queryset = queryset.filter(status=user_status)
 
-        total = queryset.count()
-        total_pages = max(1, (total + page_size - 1) // page_size)
+        users, pagination = paginate_queryset(queryset, page, page_size)
 
-        start = (page - 1) * page_size
-        end = start + page_size
-
-        serializer = UserSerializer(queryset[start:end], many=True)
-        return Response({
-            'count': total,
-            'page': page,
-            'page_size': page_size,
-            'total_pages': total_pages,
-            'results': serializer.data,
-        })
+        serializer = UserSerializer(users, many=True)
+        return Response({**pagination, 'results': serializer.data})
 
 
 class AdminUserStatusView(APIView):
     """后台用户状态变更"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsActiveAdmin]
 
     def put(self, request, pk):
-        if request.user.role != 'admin':
-            return Response({'message': '无权操作'}, status=status.HTTP_403_FORBIDDEN)
         if str(request.user.id) == str(pk):
             return Response({'message': '不能禁用自己的账户'}, status=status.HTTP_400_BAD_REQUEST)
 
