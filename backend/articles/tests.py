@@ -266,6 +266,46 @@ class ArticleAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 2)
 
+    def test_admin_category_list(self):
+        self.client.force_authenticate(user=self.admin)
+        res = self.client.get('/api/admin/categories/')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 2)
+
+    def test_admin_category_create(self):
+        self.client.force_authenticate(user=self.admin)
+        res = self.client.post(
+            '/api/admin/categories/',
+            {'name': '随笔', 'description': '日常记录'},
+            format='json',
+        )
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(Category.objects.filter(name='随笔').exists())
+
+    def test_admin_category_create_forbidden(self):
+        self.client.force_authenticate(user=self.user)
+        res = self.client.post('/api/admin/categories/', {'name': '随笔'}, format='json')
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_admin_category_update(self):
+        self.client.force_authenticate(user=self.admin)
+        res = self.client.put(
+            f'/api/admin/categories/{self.category.id}/',
+            {'name': '技术文章', 'description': '工程与开发'},
+            format='json',
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.category.refresh_from_db()
+        self.assertEqual(self.category.name, '技术文章')
+
+    def test_admin_category_delete_keeps_articles(self):
+        article = self._create_article('With Category')
+        self.client.force_authenticate(user=self.admin)
+        res = self.client.delete(f'/api/admin/categories/{self.category.id}/')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        article.refresh_from_db()
+        self.assertIsNone(article.category)
+
     def test_admin_article_list(self):
         self._create_article('Article 1')
         self._create_article('Article 2')

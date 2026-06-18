@@ -18,6 +18,23 @@ export function adminDeleteArticle(id) {
   return api.delete(`/admin/articles/${id}/`)
 }
 
+// Category management
+export function getAdminCategories() {
+  return api.get('/admin/categories/')
+}
+
+export function createAdminCategory(data) {
+  return api.post('/admin/categories/', data)
+}
+
+export function updateAdminCategory(id, data) {
+  return api.put(`/admin/categories/${id}/`, data)
+}
+
+export function deleteAdminCategory(id) {
+  return api.delete(`/admin/categories/${id}/`)
+}
+
 // Comment management
 export function getAdminComments(params = {}) {
   return api.get('/admin/comments/', { params })

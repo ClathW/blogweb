@@ -10,6 +10,10 @@
         <h3>文章管理</h3>
         <p>查看全站文章，处理违规内容</p>
       </router-link>
+      <router-link to="/manage/categories" class="dashboard-card">
+        <h3>分类管理</h3>
+        <p>维护文章分类名称、描述和展示顺序</p>
+      </router-link>
       <router-link to="/manage/comments" class="dashboard-card">
         <h3>评论管理</h3>
         <p>查看全站评论，删除违规评论</p>

@@ -204,6 +204,10 @@ APP_DIR=/opt/blogweb BRANCH=main sh deploy/deploy.sh
 | POST | `/api/articles/{id}/comments/create/` | 发表评论 | Session |
 | DELETE | `/api/comments/{id}/` | 删除评论 | Session |
 | GET | `/api/categories/` | 分类列表 | - |
+| GET | `/api/admin/categories/` | 分类管理列表 | Admin |
+| POST | `/api/admin/categories/` | 创建分类 | Admin |
+| PUT | `/api/admin/categories/{id}/` | 更新分类 | Admin |
+| DELETE | `/api/admin/categories/{id}/` | 删除分类 | Admin |
 | GET | `/api/admin/users/` | 用户管理列表 | Admin |
 | PUT | `/api/admin/users/{id}/status/` | 用户状态变更 | Admin |
 | GET | `/api/admin/articles/` | 文章管理列表 | Admin |

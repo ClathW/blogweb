@@ -26,6 +26,53 @@ class CategoryListView(APIView):
         return Response(serializer.data)
 
 
+class AdminCategoryListCreateView(APIView):
+    """后台分类列表与创建"""
+    permission_classes = [IsActiveAdmin]
+
+    def get(self, request):
+        categories = Category.objects.all()
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = CategorySerializer(data=request.data)
+        if serializer.is_valid():
+            category = serializer.save()
+            return Response({
+                'message': '分类创建成功',
+                'category': CategorySerializer(category).data,
+            }, status=status.HTTP_201_CREATED)
+        return Response({
+            'message': '请求参数有误',
+            'errors': serializer.errors,
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AdminCategoryDetailView(APIView):
+    """后台分类更新与删除"""
+    permission_classes = [IsActiveAdmin]
+
+    def put(self, request, pk):
+        category = get_object_or_404(Category, pk=pk)
+        serializer = CategorySerializer(category, data=request.data, partial=True)
+        if serializer.is_valid():
+            category = serializer.save()
+            return Response({
+                'message': '分类更新成功',
+                'category': CategorySerializer(category).data,
+            })
+        return Response({
+            'message': '请求参数有误',
+            'errors': serializer.errors,
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        category = get_object_or_404(Category, pk=pk)
+        category.delete()
+        return Response({'message': '分类已删除'})
+
+
 class ArticleListView(APIView):
     """文章列表（分页 + 分类筛选）"""
     permission_classes = [AllowAny]
