@@ -26,6 +26,7 @@ print_failure_context() {
 trap print_failure_context EXIT
 
 cd "$APP_DIR"
+git config --global --add safe.directory "$APP_DIR"
 git fetch origin "$BRANCH"
 git checkout "$BRANCH"
 git pull --ff-only origin "$BRANCH"
