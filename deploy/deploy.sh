@@ -3,7 +3,17 @@ set -eu
 
 APP_DIR="${APP_DIR:-/opt/blogweb}"
 BRANCH="${BRANCH:-main}"
-COMPOSE="docker compose --env-file .env.production"
+
+if docker info >/dev/null 2>&1; then
+  DOCKER="docker"
+elif sudo -n docker info >/dev/null 2>&1; then
+  DOCKER="sudo docker"
+else
+  echo "Cannot access Docker. Add the deploy user to the docker group, use root, or allow passwordless sudo for docker." >&2
+  exit 1
+fi
+
+COMPOSE="$DOCKER compose --env-file .env.production"
 
 print_failure_context() {
   status=$?
