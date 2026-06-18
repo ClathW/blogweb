@@ -44,6 +44,10 @@ $COMPOSE ps
 
 HTTP_PORT="$(awk -F= '/^HTTP_PORT=/ { print $2 }' .env.production | tail -n 1)"
 HTTP_PORT="${HTTP_PORT:-80}"
-curl -fsS --retry 5 --retry-delay 3 --max-time 10 "http://127.0.0.1:${HTTP_PORT}/" >/dev/null
+case "$HTTP_PORT" in
+  *:*) HEALTHCHECK_URL="http://${HTTP_PORT}/" ;;
+  *) HEALTHCHECK_URL="http://127.0.0.1:${HTTP_PORT}/" ;;
+esac
+curl -fsS --retry 5 --retry-delay 3 --max-time 10 "$HEALTHCHECK_URL" >/dev/null
 
 trap - EXIT
