@@ -23,6 +23,10 @@ INSTALLED_APPS = [
     # Third-party
     'rest_framework',
     'corsheaders',
+    # Local apps
+    'users',
+    'articles',
+    'comments',
 ]
 
 MIDDLEWARE = [
@@ -103,6 +107,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Auth
+AUTH_USER_MODEL = 'users.User'
+
+# CSRF信任的前端源
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:5173').split(',')
+
 # DRF
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -117,4 +127,4 @@ REST_FRAMEWORK = {
 }
 
 # CORS
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000').split(',')
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173').split(',')
