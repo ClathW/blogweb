@@ -182,6 +182,17 @@ class ArticleAPITests(TestCase):
         article = Article.objects.get(title='Summary Test')
         self.assertEqual(len(article.summary), 200)
 
+    def test_create_article_summary_strips_markdown(self):
+        self.client.force_authenticate(user=self.user)
+        res = self.client.post('/api/articles/create/', {
+            'title': 'Markdown Summary',
+            'content': '## Heading\n\n**Bold** text with [link](https://example.com) and `code`.',
+            'category': self.category.id,
+        }, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        article = Article.objects.get(title='Markdown Summary')
+        self.assertEqual(article.summary, 'Heading Bold text with link and code.')
+
     def test_edit_own_article(self):
         article = self._create_article('Old Title')
         self.client.force_authenticate(user=self.user)
