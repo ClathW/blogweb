@@ -99,12 +99,78 @@ uv run python manage.py initadmin --username myadmin --password mypass
 ## 运行测试
 
 ```bash
-# 后端（74 个用例）
+# 后端
 cd backend && uv run python manage.py test
 
-# 前端（8 个用例）
+# 前端
 cd frontend && npm run test
 ```
+
+## Docker Compose 部署
+
+推荐在 VPS 上使用 Docker Compose 部署生产环境：
+
+```bash
+git clone https://github.com/ClathW/blogweb.git /opt/blogweb
+cd /opt/blogweb
+cp .env.production.example .env.production
+```
+
+编辑 `.env.production`：
+
+```env
+SECRET_KEY=替换为随机长密钥
+DEBUG=False
+ALLOWED_HOSTS=你的域名,服务器IP
+CORS_ALLOWED_ORIGINS=https://你的域名
+CSRF_TRUSTED_ORIGINS=https://你的域名
+POSTGRES_PASSWORD=替换为强密码
+DJANGO_SUPERUSER_PASSWORD=替换为强密码
+```
+
+启动：
+
+```bash
+docker compose --env-file .env.production build
+docker compose --env-file .env.production up -d
+```
+
+服务组成：
+
+| 服务 | 说明 |
+|---|---|
+| `nginx` | 托管 Vue 静态文件，并反代 `/api/`、`/admin/` |
+| `backend` | Django + Gunicorn |
+| `db` | PostgreSQL |
+
+默认暴露 `HTTP_PORT=80`。如果使用 HTTPS，建议在 VPS 外层再放 Caddy、Nginx Proxy Manager 或云厂商负载均衡做 TLS 终止，并把 `.env.production` 中的 `CSRF_COOKIE_SECURE`、`SESSION_COOKIE_SECURE` 设为 `True`。
+
+手动部署更新：
+
+```bash
+APP_DIR=/opt/blogweb BRANCH=main sh deploy/deploy.sh
+```
+
+## CI/CD
+
+本仓库包含两个 GitHub Actions workflow：
+
+| 文件 | 触发 | 作用 |
+|---|---|---|
+| `.github/workflows/ci.yml` | PR、`main` push | 后端测试、前端测试、前端构建、npm audit |
+| `.github/workflows/deploy.yml` | `main` 上 CI 成功后 | SSH 到 VPS 执行 `deploy/deploy.sh` |
+
+在 GitHub 仓库 `Settings -> Secrets and variables -> Actions` 中配置：
+
+| Secret | 示例 | 说明 |
+|---|---|---|
+| `VPS_HOST` | `1.2.3.4` | VPS IP 或域名 |
+| `VPS_PORT` | `22` | SSH 端口，可省略 |
+| `VPS_USER` | `deploy` | SSH 用户 |
+| `VPS_SSH_KEY` | 私钥内容 | 能登录 VPS 的私钥 |
+| `VPS_APP_DIR` | `/opt/blogweb` | VPS 上项目目录，可省略 |
+
+首次部署前，需要先在 VPS 上安装 Docker 和 Docker Compose，并把仓库 clone 到 `VPS_APP_DIR`。后续 `main` 分支 CI 通过后会自动部署。
 
 ## 环境变量
 
