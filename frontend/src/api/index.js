@@ -1,5 +1,11 @@
 import axios from 'axios'
 
+let authRejectedHandler = null
+
+export function setAuthRejectedHandler(handler) {
+  authRejectedHandler = handler
+}
+
 const api = axios.create({
   baseURL: '/api',
   withCredentials: true,
@@ -29,11 +35,8 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      const authStore = localStorage.getItem('auth')
-      if (authStore) {
-        localStorage.removeItem('auth')
-      }
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      authRejectedHandler?.()
     }
     return Promise.reject(error)
   }

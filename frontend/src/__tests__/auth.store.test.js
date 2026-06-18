@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/auth'
 
 // Mock the API modules
 vi.mock('@/api/auth', () => ({
+  getCSRFToken: vi.fn(),
   login: vi.fn(),
   register: vi.fn(),
   logout: vi.fn(),
@@ -19,6 +20,7 @@ describe('Auth Store', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.clearAllMocks()
+    authApi.getCSRFToken.mockResolvedValue({ data: { message: 'CSRF cookie set' } })
   })
 
   describe('checkAuth', () => {
@@ -30,6 +32,7 @@ describe('Auth Store', () => {
       const result = await store.checkAuth()
 
       expect(result).toBe(true)
+      expect(authApi.getCSRFToken).toHaveBeenCalled()
       expect(store.user).toEqual(mockUser)
       expect(store.isLoggedIn).toBe(true)
     })
@@ -43,6 +46,21 @@ describe('Auth Store', () => {
       expect(result).toBe(false)
       expect(store.user).toBeNull()
       expect(store.isLoggedIn).toBe(false)
+    })
+  })
+
+  describe('clearAuth', () => {
+    it('clears user and can reset initialization state', async () => {
+      authApi.checkAuth.mockResolvedValue({ data: { user: { id: 1, username: 'test' } } })
+
+      const store = useAuthStore()
+      await store.checkAuth()
+      expect(store.initialized).toBe(true)
+
+      store.clearAuth({ resetInitialized: true })
+
+      expect(store.user).toBeNull()
+      expect(store.initialized).toBe(false)
     })
   })
 

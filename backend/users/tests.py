@@ -42,9 +42,15 @@ class AuthAPITests(TestCase):
         self.register_url = '/api/auth/register/'
         self.login_url = '/api/auth/login/'
         self.logout_url = '/api/auth/logout/'
+        self.csrf_url = '/api/auth/csrf/'
         self.check_url = '/api/auth/check/'
         self.profile_url = '/api/user/profile/'
         self.password_url = '/api/user/password/'
+
+    def test_csrf_endpoint_sets_cookie(self):
+        res = self.client.get(self.csrf_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('csrftoken', res.cookies)
 
     def test_register_success(self):
         data = {

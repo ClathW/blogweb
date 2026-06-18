@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     # 认证
+    path('auth/csrf/', views.CSRFTokenView.as_view(), name='csrf-token'),
     path('auth/register/', views.RegisterView.as_view(), name='register'),
     path('auth/login/', views.LoginView.as_view(), name='login'),
     path('auth/logout/', views.LogoutView.as_view(), name='logout'),

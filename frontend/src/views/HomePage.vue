@@ -36,11 +36,15 @@ function changePage(p) {
 
 function filterByCategory(id) {
   selectedCategory.value = id
-  page.value = 1
 }
 
-watch(page, fetchArticles)
-watch(selectedCategory, () => { page.value = 1; fetchArticles() })
+watch([page, selectedCategory], ([newPage, newCategory], [oldPage, oldCategory]) => {
+  if (newCategory !== oldCategory && newPage !== 1) {
+    page.value = 1
+    return
+  }
+  fetchArticles()
+})
 
 onMounted(() => {
   fetchCategories()

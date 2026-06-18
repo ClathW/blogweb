@@ -1,6 +1,8 @@
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -34,6 +36,15 @@ class RegisterView(APIView):
             'message': '请求参数有误',
             'errors': serializer.errors,
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CSRFTokenView(APIView):
+    """发放 CSRF cookie"""
+    permission_classes = [AllowAny]
+
+    @method_decorator(ensure_csrf_cookie)
+    def get(self, request):
+        return Response({'message': 'CSRF cookie set'})
 
 
 class LoginView(APIView):

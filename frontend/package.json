@@ -26,6 +26,9 @@
     "vite-plugin-vue-devtools": "^8.0.7",
     "vitest": "^4.1.9"
   },
+  "overrides": {
+    "esbuild": "^0.28.1"
+  },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   }

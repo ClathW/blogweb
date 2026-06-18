@@ -193,6 +193,17 @@ class ArticleAPITests(TestCase):
         article = Article.objects.get(title='Markdown Summary')
         self.assertEqual(article.summary, 'Heading Bold text with link and code.')
 
+    def test_create_article_summary_preserves_hyphenated_words(self):
+        self.client.force_authenticate(user=self.user)
+        res = self.client.post('/api/articles/create/', {
+            'title': 'Hyphen Summary',
+            'content': 'state-of-the-art markdown support',
+            'category': self.category.id,
+        }, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        article = Article.objects.get(title='Hyphen Summary')
+        self.assertEqual(article.summary, 'state-of-the-art markdown support')
+
     def test_edit_own_article(self):
         article = self._create_article('Old Title')
         self.client.force_authenticate(user=self.user)

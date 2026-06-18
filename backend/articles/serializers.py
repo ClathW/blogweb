@@ -13,7 +13,7 @@ def markdown_to_summary_text(content):
     text = re.sub(r'(^|\n)\s{0,3}>\s?', r'\1', text)
     text = re.sub(r'(^|\n)\s*[-*+]\s+', r'\1', text)
     text = re.sub(r'(^|\n)\s*\d+\.\s+', r'\1', text)
-    text = re.sub(r'[*_~>#-]+', '', text)
+    text = re.sub(r'[*_~>#]+', '', text)
     return re.sub(r'\s+', ' ', text).strip()
 
 

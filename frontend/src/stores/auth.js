@@ -10,14 +10,22 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = computed(() => !!user.value)
   const isAdmin = computed(() => user.value?.role === 'admin')
 
+  function clearAuth({ resetInitialized = false } = {}) {
+    user.value = null
+    if (resetInitialized) {
+      initialized.value = false
+    }
+  }
+
   async function checkAuth() {
     loading.value = true
     try {
+      await authApi.getCSRFToken()
       const res = await authApi.checkAuth()
       user.value = res.data.user
       return true
     } catch {
-      user.value = null
+      clearAuth()
       return false
     } finally {
       loading.value = false
@@ -38,7 +46,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function logoutUser() {
     await authApi.logout()
-    user.value = null
+    clearAuth()
   }
 
   async function fetchProfile() {
@@ -64,6 +72,7 @@ export const useAuthStore = defineStore('auth', () => {
     initialized,
     isLoggedIn,
     isAdmin,
+    clearAuth,
     checkAuth,
     loginUser,
     registerUser,

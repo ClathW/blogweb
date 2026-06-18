@@ -1,5 +1,9 @@
 import api from './index'
 
+export function getCSRFToken() {
+  return api.get('/auth/csrf/')
+}
+
 export function register(data) {
   return api.post('/auth/register/', data)
 }
