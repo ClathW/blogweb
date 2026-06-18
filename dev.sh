@@ -38,11 +38,8 @@ auto_init() {
         uv sync --quiet 2>/dev/null
         uv run python manage.py migrate --run-syncdb 2>/dev/null
         echo ""
-        echo "📝 是否需要创建管理员账号？(y/N)"
-        read -r answer
-        if [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
-            uv run python manage.py createsuperuser
-        fi
+        echo "创建默认管理员 admin/admin123..."
+        uv run python manage.py initadmin
         cd "$SCRIPT_DIR"
     fi
 
