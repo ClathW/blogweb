@@ -1,3 +1,5 @@
+FROM ghcr.io/astral-sh/uv:0.9.18 AS uv
+
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -7,10 +9,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl \
-    && rm -rf /var/lib/apt/lists/* \
-    && pip install --no-cache-dir uv
+COPY --from=uv /uv /usr/local/bin/uv
+COPY --from=uv /uvx /usr/local/bin/uvx
 
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
