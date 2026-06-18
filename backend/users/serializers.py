@@ -1,5 +1,7 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
+from django.utils import timezone
+from datetime import timedelta
 from rest_framework import serializers
 from .models import User
 
@@ -51,22 +53,45 @@ class LoginSerializer(serializers.Serializer):
         if not username or not password:
             raise serializers.ValidationError('用户名和密码不能为空')
 
-        # 支持用户名或邮箱登录
-        user = None
+        # Find user by username or email
         if '@' in username:
-            try:
-                u = User.objects.get(email=username)
-                user = authenticate(request=self.context.get('request'), username=u.username, password=password)
-            except User.DoesNotExist:
-                pass
+            user = User.objects.filter(email=username).first()
         else:
-            user = authenticate(request=self.context.get('request'), username=username, password=password)
+            user = User.objects.filter(username=username).first()
 
-        if not user:
+        # Check if account is locked
+        if user and user.is_locked():
+            remaining = int((user.locked_until - timezone.now()).total_seconds() / 60) + 1
+            raise serializers.ValidationError(
+                f'账户已被临时锁定，请{remaining}分钟后重试'
+            )
+
+        # Authenticate
+        authenticated = None
+        if user:
+            authenticated = authenticate(
+                request=self.context.get('request'),
+                username=user.username,
+                password=password
+            )
+
+        if not authenticated:
+            if user:
+                user.failed_login_attempts += 1
+                if user.failed_login_attempts >= 5:
+                    user.locked_until = timezone.now() + timedelta(minutes=15)
+                    user.failed_login_attempts = 0
+                user.save(update_fields=['failed_login_attempts', 'locked_until'])
             raise serializers.ValidationError('用户名或密码错误')
 
         if user.status == 'disabled':
             raise serializers.ValidationError('账户已被禁用，请联系管理员')
+
+        # Reset failed attempts on success
+        if user.failed_login_attempts > 0 or user.locked_until:
+            user.failed_login_attempts = 0
+            user.locked_until = None
+            user.save(update_fields=['failed_login_attempts', 'locked_until'])
 
         data['user'] = user
         return data

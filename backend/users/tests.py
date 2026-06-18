@@ -120,6 +120,25 @@ class AuthAPITests(TestCase):
         res = self.client.post(self.login_url, {'username': 'disabled', 'password': 'test123456'}, format='json')
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_login_rate_limit_locks_after_5_failures(self):
+        User.objects.create_user(username='locktest', password='rightpass')
+        for _ in range(5):
+            res = self.client.post(self.login_url, {'username': 'locktest', 'password': 'wrong'}, format='json')
+            self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        # 6th attempt should say locked
+        res = self.client.post(self.login_url, {'username': 'locktest', 'password': 'rightpass'}, format='json')
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertIn('锁定', res.data['message'])
+
+    def test_login_rate_limit_resets_on_success(self):
+        User.objects.create_user(username='resettest', password='rightpass')
+        # Fail 3 times
+        for _ in range(3):
+            self.client.post(self.login_url, {'username': 'resettest', 'password': 'wrong'}, format='json')
+        # Success resets counter
+        res = self.client.post(self.login_url, {'username': 'resettest', 'password': 'rightpass'}, format='json')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
     def test_check_auth_authenticated(self):
         user = User.objects.create_user(username='authuser', password='test123456')
         self.client.force_authenticate(user=user)

@@ -49,9 +49,17 @@ class LoginView(APIView):
                 'message': '登录成功',
                 'user': UserSerializer(user).data,
             })
+        # Extract actual error message from serializer
+        errors = serializer.errors
+        msg = '用户名或密码错误'
+        if errors.get('non_field_errors'):
+            msg = errors['non_field_errors'][0]
+        elif errors:
+            first_key = next(iter(errors))
+            msg = errors[first_key][0] if isinstance(errors[first_key], list) else str(errors[first_key])
         return Response({
-            'message': '用户名或密码错误',
-            'errors': serializer.errors,
+            'message': msg,
+            'errors': errors,
         }, status=status.HTTP_401_UNAUTHORIZED)
 
 
