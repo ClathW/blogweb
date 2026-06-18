@@ -96,7 +96,7 @@ async function handleChangePassword() {
 
 <style scoped>
 .profile-page {
-  max-width: 600px;
+  max-width: 720px;
   margin: 0 auto;
 }
 
@@ -105,11 +105,12 @@ async function handleChangePassword() {
 }
 
 .card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  background: var(--c-bg-card);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
 }
 
 .card h3 {
@@ -118,7 +119,7 @@ async function handleChangePassword() {
 
 .profile-info p {
   margin: 0.5rem 0;
-  color: #4b5563;
+  color: var(--c-text-secondary);
 }
 
 .form-group {
@@ -129,13 +130,13 @@ async function handleChangePassword() {
   display: block;
   margin-bottom: 0.3rem;
   font-size: 0.9rem;
-  color: #374151;
+  color: var(--c-text-secondary);
 }
 
 .form-group input, .form-group textarea {
   width: 100%;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid #d1d5db;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--c-border);
   border-radius: 6px;
   font-size: 0.95rem;
   box-sizing: border-box;
@@ -143,8 +144,8 @@ async function handleChangePassword() {
 
 .form-group input:focus, .form-group textarea:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 .msg {
@@ -152,13 +153,13 @@ async function handleChangePassword() {
   border-radius: 6px;
   margin-bottom: 1rem;
   font-size: 0.9rem;
-  background: #f0fdf4;
-  color: #16a34a;
+  background: var(--c-success-soft);
+  color: var(--c-success);
 }
 
 .btn-primary {
   padding: 0.6rem 1.5rem;
-  background: #2563eb;
+  background: var(--c-primary);
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -166,5 +167,5 @@ async function handleChangePassword() {
   cursor: pointer;
 }
 
-.btn-primary:hover { background: #1d4ed8; }
+.btn-primary:hover { background: var(--c-primary-hover); }
 </style>

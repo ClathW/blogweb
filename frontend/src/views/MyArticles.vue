@@ -89,7 +89,7 @@ onMounted(fetchArticles)
 </template>
 
 <style scoped>
-.my-articles { max-width: 900px; margin: 0 auto; }
+.my-articles { max-width: 980px; margin: 0 auto; }
 
 .page-header {
   display: flex;
@@ -101,52 +101,54 @@ onMounted(fetchArticles)
 .page-header h2 { margin: 0; }
 
 .btn-primary {
-  padding: 0.5rem 1.25rem;
-  background: #2563eb;
+  padding: 0.55rem 1.25rem;
+  background: var(--c-primary);
   color: #fff;
   border-radius: 6px;
   text-decoration: none;
   font-size: 0.9rem;
 }
 
-.loading, .empty { text-align: center; padding: 3rem 0; color: #9ca3af; }
+.loading, .empty { text-align: center; padding: 3rem 0; color: var(--c-text-muted); }
 
 .article-table {
   width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--c-bg-card);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
   overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
 .article-table th, .article-table td {
   padding: 0.75rem;
   text-align: left;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--c-border);
   font-size: 0.9rem;
 }
 
 .article-table th {
-  background: #f9fafb;
-  color: #6b7280;
-  font-weight: 500;
+  background: rgba(219, 234, 254, 0.5);
+  color: var(--c-text-secondary);
+  font-weight: 700;
 }
 
-.title-link { color: #111827; text-decoration: none; }
-.title-link:hover { color: #2563eb; }
+.title-link { color: var(--c-text); text-decoration: none; font-weight: 600; }
+.title-link:hover { color: var(--c-primary); }
 
-.status { padding: 0.15rem 0.5rem; border-radius: 10px; font-size: 0.8rem; }
-.status-published { background: #dcfce7; color: #16a34a; }
-.status-draft { background: #fef3c7; color: #d97706; }
-.status-taken_down { background: #fee2e2; color: #dc2626; }
-.status-archived { background: #f3f4f6; color: #6b7280; }
+.status { padding: 0.18rem 0.55rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
+.status-published { background: var(--c-success-soft); color: var(--c-success); }
+.status-draft { background: var(--c-warning-soft); color: var(--c-warning); }
+.status-taken_down { background: var(--c-danger-soft); color: var(--c-danger); }
+.status-archived { background: #eef2f4; color: var(--c-text-secondary); }
 
 .actions { display: flex; gap: 0.5rem; }
 
 .btn-edit {
-  padding: 0.2rem 0.6rem;
-  background: #2563eb;
+  padding: 0.25rem 0.65rem;
+  background: var(--c-primary);
   color: #fff;
   border-radius: 4px;
   text-decoration: none;
@@ -154,10 +156,10 @@ onMounted(fetchArticles)
 }
 
 .btn-delete {
-  padding: 0.2rem 0.6rem;
+  padding: 0.25rem 0.65rem;
   background: none;
-  border: 1px solid #fca5a5;
-  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.28);
+  color: var(--c-danger);
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.8rem;
@@ -172,12 +174,19 @@ onMounted(fetchArticles)
 
 .pagination button {
   padding: 0.4rem 0.7rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--c-border);
   border-radius: 6px;
-  background: #fff;
+  background: var(--c-bg-card);
   cursor: pointer;
 }
 
 .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
-.pagination button.current { background: #2563eb; color: #fff; border-color: #2563eb; }
+.pagination button.current { background: var(--c-primary); color: #fff; border-color: var(--c-primary); }
+
+@media (max-width: 760px) {
+  .article-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
 </style>

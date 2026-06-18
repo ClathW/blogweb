@@ -37,47 +37,52 @@ async function handleLogout() {
 
 <style scoped>
 .navbar {
-  background: var(--c-bg-card);
+  background: rgba(251, 250, 247, 0.82);
   border-bottom: 1px solid var(--c-border);
-  padding: 0 1.5rem;
+  padding: 0 1.25rem;
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
 .nav-container {
-  max-width: 1100px;
+  max-width: 1180px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 60px;
+  min-height: 68px;
+  gap: 1rem;
 }
 
 .nav-brand {
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 800;
   color: var(--c-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
+  white-space: nowrap;
 }
 
 .nav-links {
   display: flex;
-  gap: 0.25rem;
+  gap: 0.35rem;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .nav-links a {
-  padding: 0.4rem 0.85rem;
+  padding: 0.45rem 0.85rem;
   border-radius: 8px;
   color: var(--c-text-secondary);
   font-size: 0.9rem;
-  transition: all 0.15s;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .nav-links a:hover {
-  background: var(--c-primary-light);
+  background: var(--c-primary-soft);
   color: var(--c-primary);
 }
 
@@ -90,6 +95,7 @@ async function handleLogout() {
   background: var(--c-primary) !important;
   color: #fff !important;
   font-weight: 500;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.22);
 }
 
 .btn-write:hover {
@@ -101,6 +107,7 @@ async function handleLogout() {
   background: var(--c-primary);
   color: #fff !important;
   font-weight: 500;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.22);
 }
 
 .btn-register:hover {
@@ -120,5 +127,17 @@ async function handleLogout() {
 .logout-link {
   color: var(--c-text-muted) !important;
   font-size: 0.85rem !important;
+}
+
+@media (max-width: 720px) {
+  .nav-container {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 0.85rem 0;
+  }
+
+  .nav-links {
+    justify-content: flex-start;
+  }
 }
 </style>

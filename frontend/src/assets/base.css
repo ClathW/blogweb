@@ -1,38 +1,26 @@
 :root {
-  --c-bg: #f8f9fa;
-  --c-bg-card: #ffffff;
-  --c-text: #2c3e50;
-  --c-text-secondary: #6b7280;
-  --c-text-muted: #9ca3af;
-  --c-primary: #4f46e5;
-  --c-primary-hover: #4338ca;
-  --c-primary-light: #eef2ff;
-  --c-border: #e5e7eb;
-  --c-danger: #ef4444;
-  --c-success: #22c55e;
-  --c-warning: #f59e0b;
-  --radius: 10px;
-  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-  --shadow-md: 0 4px 6px rgba(0,0,0,.05), 0 2px 4px rgba(0,0,0,.04);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --c-bg: #0f172a;
-    --c-bg-card: #1e293b;
-    --c-text: #e2e8f0;
-    --c-text-secondary: #94a3b8;
-    --c-text-muted: #64748b;
-    --c-primary: #818cf8;
-    --c-primary-hover: #6366f1;
-    --c-primary-light: #1e1b4b;
-    --c-border: #334155;
-    --c-danger: #f87171;
-    --c-success: #4ade80;
-    --c-warning: #fbbf24;
-    --shadow: 0 1px 3px rgba(0,0,0,.2);
-    --shadow-md: 0 4px 6px rgba(0,0,0,.3);
-  }
+  --c-bg: #f4f7fb;
+  --c-bg-soft: #f8fbff;
+  --c-bg-card: rgba(255, 255, 255, 0.88);
+  --c-text: #1f2933;
+  --c-text-secondary: #5d6978;
+  --c-text-muted: #8a96a6;
+  --c-primary: #2563eb;
+  --c-primary-hover: #1d4ed8;
+  --c-primary-soft: #dbeafe;
+  --c-accent: #4f46e5;
+  --c-accent-soft: #e0e7ff;
+  --c-border: rgba(112, 125, 140, 0.22);
+  --c-border-strong: rgba(47, 65, 86, 0.18);
+  --c-danger: #dc2626;
+  --c-danger-soft: #fee2e2;
+  --c-success: #16a34a;
+  --c-success-soft: #dcfce7;
+  --c-warning: #d97706;
+  --c-warning-soft: #fef3c7;
+  --radius: 8px;
+  --shadow: 0 10px 30px rgba(31, 41, 51, 0.07);
+  --shadow-md: 0 16px 46px rgba(31, 41, 51, 0.11);
 }
 
 *,
@@ -45,13 +33,26 @@
 body {
   min-height: 100vh;
   color: var(--c-text);
-  background: var(--c-bg);
+  background:
+    linear-gradient(135deg, rgba(219, 234, 254, 0.78), transparent 34%),
+    linear-gradient(315deg, rgba(224, 231, 255, 0.7), transparent 30%),
+    var(--c-bg);
   line-height: 1.7;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
     'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
     sans-serif;
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(31, 41, 51, 0.035) 1px, transparent 1px);
+  background-size: 100% 42px;
+  mask-image: linear-gradient(to bottom, black, transparent 78%);
 }
 
 a {
@@ -65,6 +66,7 @@ a:hover {
 
 button {
   font-family: inherit;
+  color: inherit;
 }
 
 input, textarea, select {

@@ -85,54 +85,61 @@ onMounted(fetchComments)
 </template>
 
 <style scoped>
-.admin-comments { max-width: 1000px; margin: 0 auto; }
+.admin-comments { max-width: 1080px; margin: 0 auto; }
 .admin-comments h2 { margin-bottom: 1.5rem; }
 
 .filters {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1rem;
+  padding: 0.9rem;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  background: var(--c-bg-card);
+  box-shadow: var(--shadow);
 }
 
 .filters input {
   flex: 1;
   padding: 0.5rem 0.8rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--c-border);
   border-radius: 6px;
   font-size: 0.9rem;
 }
 
 .filters button {
   padding: 0.5rem 1rem;
-  background: #2563eb;
+  background: var(--c-primary);
   color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
 }
 
-.loading { text-align: center; padding: 2rem; color: #9ca3af; }
+.loading { text-align: center; padding: 2rem; color: var(--c-text-muted); }
 
 .data-table {
   width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--c-bg-card);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
   overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
 .data-table th, .data-table td {
   padding: 0.75rem;
   text-align: left;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--c-border);
   font-size: 0.9rem;
 }
 
 .data-table th {
-  background: #f9fafb;
-  color: #6b7280;
-  font-weight: 500;
+  background: rgba(219, 234, 254, 0.5);
+  color: var(--c-text-secondary);
+  font-weight: 700;
 }
 
 .content-cell {
@@ -144,15 +151,15 @@ onMounted(fetchComments)
 
 .btn-danger {
   padding: 0.25rem 0.75rem;
-  border: 1px solid #fca5a5;
-  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.28);
+  color: var(--c-danger);
   background: #fff;
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.8rem;
 }
 
-.btn-danger:hover { background: #fef2f2; }
+.btn-danger:hover { background: var(--c-danger-soft); }
 
 .pagination {
   display: flex;
@@ -163,12 +170,17 @@ onMounted(fetchComments)
 
 .pagination button {
   padding: 0.4rem 0.7rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--c-border);
   border-radius: 6px;
   background: #fff;
   cursor: pointer;
 }
 
 .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
-.pagination button.current { background: #2563eb; color: #fff; border-color: #2563eb; }
+.pagination button.current { background: var(--c-primary); color: #fff; border-color: var(--c-primary); }
+
+@media (max-width: 800px) {
+  .filters { flex-direction: column; }
+  .data-table { display: block; overflow-x: auto; }
+}
 </style>

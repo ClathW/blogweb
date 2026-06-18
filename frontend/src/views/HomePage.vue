@@ -51,7 +51,11 @@ onMounted(() => {
 <template>
   <div class="home-page">
     <div class="page-header">
-      <h1>博客文章</h1>
+      <div>
+        <p class="eyebrow">BlogWeb</p>
+        <h1>博客文章</h1>
+        <p class="header-copy">发现最新文章、观点和创作记录。</p>
+      </div>
       <div class="category-filter">
         <button
           :class="{ active: !selectedCategory }"
@@ -103,20 +107,41 @@ onMounted(() => {
 
 <style scoped>
 .home-page {
-  max-width: 800px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
+  align-items: flex-end;
+  margin-bottom: 1.75rem;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1.25rem;
+  padding: 2rem;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(219,234,254,0.78));
+  box-shadow: var(--shadow);
 }
 
-.page-header h1 { margin: 0; }
+.eyebrow {
+  color: var(--c-accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 2.1rem;
+  line-height: 1.2;
+}
+
+.header-copy {
+  color: var(--c-text-secondary);
+  margin-top: 0.45rem;
+}
 
 .category-filter {
   display: flex;
@@ -125,49 +150,59 @@ onMounted(() => {
 }
 
 .category-filter button {
-  padding: 0.3rem 0.8rem;
-  border: 1px solid #d1d5db;
-  border-radius: 20px;
-  background: #fff;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--c-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.76);
   cursor: pointer;
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--c-text-secondary);
+  transition: all 0.18s ease;
 }
 
 .category-filter button.active {
-  background: #2563eb;
+  background: var(--c-primary);
   color: #fff;
-  border-color: #2563eb;
+  border-color: var(--c-primary);
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.2);
 }
 
 .loading, .empty {
   text-align: center;
-  color: #9ca3af;
+  color: var(--c-text-muted);
   padding: 3rem 0;
 }
 
 .article-card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 1.25rem 1.5rem;
+  background: var(--c-bg-card);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  padding: 1.35rem 1.5rem;
   margin-bottom: 1rem;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.86);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.article-card:hover {
+  border-color: rgba(37, 99, 235, 0.32);
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
 }
 
 .article-title {
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: #111827;
+  font-size: 1.22rem;
+  font-weight: 700;
+  color: var(--c-text);
   text-decoration: none;
   display: block;
   margin-bottom: 0.5rem;
 }
 
-.article-title:hover { color: #2563eb; }
+.article-title:hover { color: var(--c-primary); }
 
 .article-summary {
-  color: #6b7280;
-  font-size: 0.9rem;
+  color: var(--c-text-secondary);
+  font-size: 0.94rem;
   line-height: 1.6;
   margin-bottom: 0.75rem;
   display: -webkit-box;
@@ -180,7 +215,7 @@ onMounted(() => {
   display: flex;
   gap: 1rem;
   font-size: 0.8rem;
-  color: #9ca3af;
+  color: var(--c-text-muted);
   flex-wrap: wrap;
 }
 
@@ -194,9 +229,9 @@ onMounted(() => {
 
 .pagination button {
   padding: 0.4rem 0.7rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--c-border);
   border-radius: 6px;
-  background: #fff;
+  background: var(--c-bg-card);
   cursor: pointer;
   font-size: 0.85rem;
 }
@@ -207,8 +242,18 @@ onMounted(() => {
 }
 
 .pagination button.current {
-  background: #2563eb;
+  background: var(--c-primary);
   color: #fff;
-  border-color: #2563eb;
+  border-color: var(--c-primary);
+}
+
+@media (max-width: 640px) {
+  .page-header {
+    padding: 1.35rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.7rem;
+  }
 }
 </style>
