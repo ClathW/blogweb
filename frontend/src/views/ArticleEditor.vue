@@ -119,8 +119,13 @@ onMounted(() => {
 
 <style scoped>
 .editor-page {
-  max-width: 800px;
+  max-width: 880px;
   margin: 0 auto;
+  padding: 1.5rem;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  background: var(--c-bg-card);
+  box-shadow: var(--shadow);
 }
 
 .editor-page h2 {
@@ -135,15 +140,15 @@ onMounted(() => {
   display: block;
   margin-bottom: 0.3rem;
   font-size: 0.9rem;
-  color: #374151;
+  color: var(--c-text-secondary);
 }
 
-.required { color: #dc2626; }
+.required { color: var(--c-danger); }
 
 .form-group input, .form-group select, .form-group textarea {
   width: 100%;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid #d1d5db;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--c-border);
   border-radius: 6px;
   font-size: 0.95rem;
   box-sizing: border-box;
@@ -152,8 +157,8 @@ onMounted(() => {
 
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 .form-group textarea {
@@ -165,17 +170,20 @@ onMounted(() => {
   display: block;
   text-align: right;
   font-size: 0.8rem;
-  color: #9ca3af;
+  color: var(--c-text-muted);
   margin-top: 0.25rem;
 }
 
 .error-msg {
-  background: #fef2f2;
-  color: #dc2626;
-  padding: 0.6rem 0.8rem;
+  background: var(--c-danger-soft);
+  color: var(--c-danger);
+  padding: 0.65rem 0.8rem;
+  border: 1px solid rgba(220, 38, 38, 0.16);
   border-radius: 6px;
   margin-bottom: 1rem;
-  font-size: 0.9rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 .form-actions {
@@ -187,7 +195,7 @@ onMounted(() => {
 
 .btn-primary {
   padding: 0.6rem 2rem;
-  background: #2563eb;
+  background: var(--c-primary);
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -196,12 +204,12 @@ onMounted(() => {
 }
 
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-primary:hover:not(:disabled) { background: #1d4ed8; }
+.btn-primary:hover:not(:disabled) { background: var(--c-primary-hover); }
 
 .btn-cancel {
   padding: 0.6rem 1.5rem;
   background: #fff;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--c-border);
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.95rem;

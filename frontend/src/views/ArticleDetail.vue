@@ -147,18 +147,24 @@ onMounted(() => {
 
 <style scoped>
 .article-detail {
-  max-width: 800px;
+  max-width: 860px;
   margin: 0 auto;
 }
 
-.loading, .empty { text-align: center; padding: 3rem 0; color: #9ca3af; }
+.loading, .empty { text-align: center; padding: 3rem 0; color: var(--c-text-muted); }
 
 .article-header {
   margin-bottom: 2rem;
+  padding: 1.75rem;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  background: var(--c-bg-card);
+  box-shadow: var(--shadow);
 }
 
 .article-header h1 {
-  font-size: 1.75rem;
+  font-size: 2rem;
+  line-height: 1.25;
   margin-bottom: 0.75rem;
 }
 
@@ -166,7 +172,7 @@ onMounted(() => {
   display: flex;
   gap: 1rem;
   font-size: 0.85rem;
-  color: #9ca3af;
+  color: var(--c-text-muted);
   margin-bottom: 1rem;
   flex-wrap: wrap;
 }
@@ -177,8 +183,8 @@ onMounted(() => {
 }
 
 .btn-link {
-  padding: 0.3rem 1rem;
-  background: #2563eb;
+  padding: 0.4rem 1rem;
+  background: var(--c-primary);
   color: #fff;
   border-radius: 6px;
   text-decoration: none;
@@ -186,8 +192,8 @@ onMounted(() => {
 }
 
 .btn-danger {
-  padding: 0.3rem 1rem;
-  background: #dc2626;
+  padding: 0.4rem 1rem;
+  background: var(--c-danger);
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -198,7 +204,7 @@ onMounted(() => {
 .confirm-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.3);
+  background: rgba(31, 41, 51, 0.36);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -206,10 +212,12 @@ onMounted(() => {
 }
 
 .confirm-box {
-  background: #fff;
+  background: var(--c-bg-soft);
   padding: 2rem;
-  border-radius: 8px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
   max-width: 400px;
+  box-shadow: var(--shadow-md);
 }
 
 .confirm-box p {
@@ -224,7 +232,7 @@ onMounted(() => {
 
 .confirm-actions button {
   padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--c-border);
   border-radius: 6px;
   background: #fff;
   cursor: pointer;
@@ -233,13 +241,26 @@ onMounted(() => {
 .article-content {
   font-size: 1.05rem;
   line-height: 1.8;
-  color: #1f2937;
+  color: var(--c-text);
   padding-bottom: 2rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.article-content :deep(p) {
+  margin: 0.85rem 0;
+}
+
+.article-content :deep(img) {
+  max-width: 100%;
+  border-radius: var(--radius);
 }
 
 .comments-section {
   margin-top: 2rem;
+  padding: 1.5rem;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  background: var(--c-bg-card);
 }
 
 .comments-section h3 {
@@ -252,8 +273,8 @@ onMounted(() => {
 
 .comment-form textarea {
   width: 100%;
-  padding: 0.6rem;
-  border: 1px solid #d1d5db;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--c-border);
   border-radius: 6px;
   resize: vertical;
   font-size: 0.9rem;
@@ -262,13 +283,14 @@ onMounted(() => {
 
 .comment-form textarea:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 .comment-form button {
   margin-top: 0.5rem;
   padding: 0.5rem 1.5rem;
-  background: #2563eb;
+  background: var(--c-primary);
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -280,11 +302,11 @@ onMounted(() => {
   cursor: not-allowed;
 }
 
-.login-hint { color: #9ca3af; margin-bottom: 1.5rem; }
-.no-comments { color: #9ca3af; text-align: center; padding: 2rem 0; }
+.login-hint { color: var(--c-text-muted); margin-bottom: 1.5rem; }
+.no-comments { color: var(--c-text-muted); text-align: center; padding: 2rem 0; }
 
 .comment {
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--c-border);
   padding: 1rem 0;
 }
 
@@ -295,10 +317,10 @@ onMounted(() => {
 }
 
 .comment-header strong { font-size: 0.9rem; }
-.comment-time { color: #9ca3af; font-size: 0.8rem; }
+.comment-time { color: var(--c-text-muted); font-size: 0.8rem; }
 
 .comment-content {
-  color: #4b5563;
+  color: var(--c-text-secondary);
   font-size: 0.9rem;
   line-height: 1.6;
 }
@@ -307,7 +329,7 @@ onMounted(() => {
   margin-top: 0.5rem;
   background: none;
   border: none;
-  color: #dc2626;
+  color: var(--c-danger);
   cursor: pointer;
   font-size: 0.8rem;
 }

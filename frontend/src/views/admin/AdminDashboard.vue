@@ -20,7 +20,7 @@
 
 <style scoped>
 .admin-dashboard {
-  max-width: 800px;
+  max-width: 920px;
   margin: 0 auto;
 }
 
@@ -35,27 +35,29 @@
 }
 
 .dashboard-card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  background: var(--c-bg-card);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
   padding: 1.5rem;
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .dashboard-card:hover {
-  border-color: #2563eb;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+  border-color: rgba(37, 99, 235, 0.32);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .dashboard-card h3 {
   margin-bottom: 0.5rem;
-  color: #2563eb;
+  color: var(--c-primary);
 }
 
 .dashboard-card p {
-  color: #6b7280;
+  color: var(--c-text-secondary);
   font-size: 0.9rem;
 }
 </style>

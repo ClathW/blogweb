@@ -72,21 +72,23 @@ async function handleLogin() {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 60vh;
+  min-height: 68vh;
 }
 
 .auth-card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 2rem;
+  background: var(--c-bg-card);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  padding: 2.25rem;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
+  box-shadow: var(--shadow-md);
 }
 
 .auth-card h2 {
   text-align: center;
   margin-bottom: 1.5rem;
+  font-size: 1.65rem;
 }
 
 .form-group {
@@ -97,13 +99,13 @@ async function handleLogin() {
   display: block;
   margin-bottom: 0.3rem;
   font-size: 0.9rem;
-  color: #374151;
+  color: var(--c-text-secondary);
 }
 
 .form-group input {
   width: 100%;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid #d1d5db;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--c-border);
   border-radius: 6px;
   font-size: 0.95rem;
   box-sizing: border-box;
@@ -111,23 +113,26 @@ async function handleLogin() {
 
 .form-group input:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 .error-msg {
-  background: #fef2f2;
-  color: #dc2626;
-  padding: 0.6rem 0.8rem;
+  background: var(--c-danger-soft);
+  color: var(--c-danger);
+  padding: 0.65rem 0.8rem;
+  border: 1px solid rgba(220, 38, 38, 0.16);
   border-radius: 6px;
   margin-bottom: 1rem;
-  font-size: 0.9rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 .btn-primary {
   width: 100%;
-  padding: 0.7rem;
-  background: #2563eb;
+  padding: 0.75rem;
+  background: var(--c-primary);
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -142,17 +147,17 @@ async function handleLogin() {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #1d4ed8;
+  background: var(--c-primary-hover);
 }
 
 .switch-link {
   text-align: center;
   margin-top: 1rem;
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--c-text-secondary);
 }
 
 .switch-link a {
-  color: #2563eb;
+  color: var(--c-primary);
 }
 </style>
