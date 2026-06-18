@@ -1,8 +1,12 @@
 from django.contrib.auth import login, logout
+from django.shortcuts import get_object_or_404
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from django.db.models import Q
 
 from .models import User
 from .serializers import (
@@ -108,3 +112,61 @@ class UserCheckView(APIView):
             'is_authenticated': True,
             'user': UserSerializer(request.user).data,
         })
+
+
+# ===== 后台管理 Views =====
+
+class AdminUserListView(APIView):
+    """后台用户列表"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.role != 'admin':
+            return Response({'message': '无权访问'}, status=status.HTTP_403_FORBIDDEN)
+
+        page = int(request.query_params.get('page', 1))
+        page_size = int(request.query_params.get('page_size', 10))
+        keyword = request.query_params.get('keyword', '')
+        user_status = request.query_params.get('status', '')
+
+        queryset = User.objects.all().order_by('-date_joined')
+
+        if keyword:
+            queryset = queryset.filter(Q(username__icontains=keyword) | Q(email__icontains=keyword))
+        if user_status:
+            queryset = queryset.filter(status=user_status)
+
+        total = queryset.count()
+        total_pages = max(1, (total + page_size - 1) // page_size)
+
+        start = (page - 1) * page_size
+        end = start + page_size
+
+        serializer = UserSerializer(queryset[start:end], many=True)
+        return Response({
+            'count': total,
+            'page': page,
+            'page_size': page_size,
+            'total_pages': total_pages,
+            'results': serializer.data,
+        })
+
+
+class AdminUserStatusView(APIView):
+    """后台用户状态变更"""
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, pk):
+        if request.user.role != 'admin':
+            return Response({'message': '无权操作'}, status=status.HTTP_403_FORBIDDEN)
+        if str(request.user.id) == str(pk):
+            return Response({'message': '不能禁用自己的账户'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = get_object_or_404(User, pk=pk)
+        new_status = request.data.get('status')
+        if new_status not in ('active', 'disabled'):
+            return Response({'message': '无效的状态值'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.status = new_status
+        user.save(update_fields=['status'])
+        return Response({'message': '用户状态更新成功'})

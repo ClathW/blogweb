@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 from .models import Article, Category
@@ -143,3 +144,56 @@ class MyArticlesView(APIView):
             'total_pages': total_pages,
             'results': serializer.data,
         })
+
+
+# ===== 后台管理 Views =====
+
+class AdminArticleListView(APIView):
+    """后台文章管理列表"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.role != 'admin':
+            return Response({'message': '无权访问'}, status=status.HTTP_403_FORBIDDEN)
+
+        page = int(request.query_params.get('page', 1))
+        page_size = int(request.query_params.get('page_size', 10))
+        keyword = request.query_params.get('keyword', '')
+        category_id = request.query_params.get('category', '')
+
+        queryset = Article.objects.filter(is_deleted=False).select_related('author', 'category')
+
+        if keyword:
+            queryset = queryset.filter(Q(title__icontains=keyword) | Q(content__icontains=keyword))
+        if category_id:
+            queryset = queryset.filter(category_id=category_id)
+
+        total = queryset.count()
+        total_pages = max(1, (total + page_size - 1) // page_size)
+
+        start = (page - 1) * page_size
+        end = start + page_size
+        articles = queryset[start:end]
+
+        serializer = ArticleListSerializer(articles, many=True)
+        return Response({
+            'count': total,
+            'page': page,
+            'page_size': page_size,
+            'total_pages': total_pages,
+            'results': serializer.data,
+        })
+
+
+class AdminArticleDeleteView(APIView):
+    """后台强制删除文章"""
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        if request.user.role != 'admin':
+            return Response({'message': '无权操作'}, status=status.HTTP_403_FORBIDDEN)
+
+        article = get_object_or_404(Article, pk=pk, is_deleted=False)
+        article.is_deleted = True
+        article.save(update_fields=['is_deleted'])
+        return Response({'message': '文章已强制删除'})
