@@ -20,11 +20,11 @@ trap cleanup SIGINT SIGTERM
 # 检查依赖
 check_deps() {
     if ! command -v uv &>/dev/null; then
-        echo "❌ 未安装 uv，请先安装: curl -LsSf https://astral.sh/uv/install.sh | sh"
+        echo "[ERR] 未安装 uv，请先安装: curl -LsSf https://astral.sh/uv/install.sh | sh"
         exit 1
     fi
     if ! command -v node &>/dev/null; then
-        echo "❌ 未安装 Node.js"
+        echo "[ERR] 未安装 Node.js"
         exit 1
     fi
 }
@@ -45,7 +45,7 @@ auto_init() {
     fi
 }
 
-echo "🚀 BlogWeb 启动中..."
+echo "BlogWeb 启动中..."
 echo ""
 check_deps
 auto_init
