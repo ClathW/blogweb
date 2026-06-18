@@ -5,7 +5,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple \
-    UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple \
     UV_DEFAULT_INDEX=https://pypi.tuna.tsinghua.edu.cn/simple
 
 WORKDIR /app
