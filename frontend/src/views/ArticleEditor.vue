@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { createArticle, updateArticle, getArticle, getCategories } from '@/api/articles'
+import { renderMarkdown } from '@/utils/markdown'
 
 const route = useRoute()
 const router = useRouter()
@@ -16,6 +17,8 @@ const form = ref({
 })
 
 const error = ref('')
+const activePane = ref('edit')
+const renderedPreview = computed(() => renderMarkdown(form.value.content || ''))
 
 async function fetchCategories() {
   try {
@@ -96,14 +99,37 @@ onMounted(() => {
         </select>
       </div>
 
-      <div class="form-group">
-        <label>正文 <span class="required">*</span></label>
-        <textarea
-          v-model="form.content"
-          placeholder="开始写作..."
-          rows="20"
-          maxlength="50000"
-        ></textarea>
+      <div class="form-group markdown-field">
+        <div class="field-header">
+          <label>正文 <span class="required">*</span></label>
+          <div class="editor-tabs" aria-label="Markdown编辑模式">
+            <button
+              type="button"
+              :class="{ active: activePane === 'edit' }"
+              @click="activePane = 'edit'"
+            >编辑</button>
+            <button
+              type="button"
+              :class="{ active: activePane === 'preview' }"
+              @click="activePane = 'preview'"
+            >预览</button>
+          </div>
+        </div>
+
+        <div class="markdown-workspace">
+          <textarea
+            v-show="activePane === 'edit'"
+            v-model="form.content"
+            placeholder="# 标题&#10;&#10;支持 **加粗**、列表、引用、代码块和链接。"
+            rows="22"
+            maxlength="50000"
+          ></textarea>
+          <div
+            v-show="activePane === 'preview'"
+            class="markdown-preview markdown-body"
+            v-html="renderedPreview"
+          ></div>
+        </div>
         <span class="char-count">{{ form.content.length }}/50000</span>
       </div>
 
@@ -145,6 +171,40 @@ onMounted(() => {
 
 .required { color: var(--c-danger); }
 
+.field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+.field-header label {
+  margin-bottom: 0;
+}
+
+.editor-tabs {
+  display: flex;
+  border: 1px solid var(--c-border);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--c-bg-soft);
+}
+
+.editor-tabs button {
+  padding: 0.35rem 0.8rem;
+  border: 0;
+  background: transparent;
+  color: var(--c-text-secondary);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.editor-tabs button.active {
+  background: var(--c-primary);
+  color: #fff;
+}
+
 .form-group input, .form-group select, .form-group textarea {
   width: 100%;
   padding: 0.7rem 0.85rem;
@@ -164,6 +224,107 @@ onMounted(() => {
 .form-group textarea {
   resize: vertical;
   line-height: 1.6;
+}
+
+.markdown-workspace {
+  min-height: 440px;
+}
+
+.markdown-workspace textarea,
+.markdown-preview {
+  min-height: 440px;
+}
+
+.markdown-workspace textarea {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+}
+
+.markdown-preview {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--c-border);
+  border-radius: 6px;
+  background: var(--c-bg-soft);
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+.markdown-body {
+  color: var(--c-text);
+  line-height: 1.75;
+}
+
+.markdown-body :deep(h1),
+.markdown-body :deep(h2),
+.markdown-body :deep(h3),
+.markdown-body :deep(h4) {
+  margin: 1.1rem 0 0.6rem;
+  line-height: 1.3;
+}
+
+.markdown-body :deep(p),
+.markdown-body :deep(ul),
+.markdown-body :deep(ol),
+.markdown-body :deep(blockquote),
+.markdown-body :deep(pre),
+.markdown-body :deep(table) {
+  margin: 0.8rem 0;
+}
+
+.markdown-body :deep(ul),
+.markdown-body :deep(ol) {
+  padding-left: 1.5rem;
+}
+
+.markdown-body :deep(blockquote) {
+  padding: 0.2rem 1rem;
+  border-left: 3px solid var(--c-primary);
+  color: var(--c-text-secondary);
+  background: var(--c-primary-soft);
+  border-radius: 0 6px 6px 0;
+}
+
+.markdown-body :deep(code) {
+  padding: 0.12rem 0.35rem;
+  border: 1px solid var(--c-border);
+  border-radius: 4px;
+  background: var(--c-bg-card);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 0.92em;
+}
+
+.markdown-body :deep(pre) {
+  overflow-x: auto;
+  padding: 1rem;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  background: #111827;
+  color: #e5e7eb;
+}
+
+.markdown-body :deep(pre code) {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.markdown-body :deep(img) {
+  max-width: 100%;
+  border-radius: var(--radius);
+}
+
+.markdown-body :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+}
+
+.markdown-body :deep(th),
+.markdown-body :deep(td) {
+  border: 1px solid var(--c-border);
+  padding: 0.5rem 0.65rem;
 }
 
 .char-count {
@@ -208,10 +369,39 @@ onMounted(() => {
 
 .btn-cancel {
   padding: 0.6rem 1.5rem;
-  background: #fff;
+  background: var(--c-bg-card);
   border: 1px solid var(--c-border);
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.95rem;
+}
+
+@media (min-width: 920px) {
+  .editor-tabs {
+    display: none;
+  }
+
+  .markdown-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .markdown-workspace textarea,
+  .markdown-preview {
+    display: block !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .editor-page {
+    padding: 1rem;
+  }
+
+  .field-header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 }
 </style>

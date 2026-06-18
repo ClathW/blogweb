@@ -1,5 +1,20 @@
+import re
+
 from rest_framework import serializers
 from .models import Article, Category
+
+
+def markdown_to_summary_text(content):
+    text = re.sub(r'```[\s\S]*?```', ' ', content)
+    text = re.sub(r'`([^`]*)`', r'\1', text)
+    text = re.sub(r'!\[([^\]]*)\]\([^)]+\)', r'\1', text)
+    text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text)
+    text = re.sub(r'(^|\n)\s{0,3}#{1,6}\s+', r'\1', text)
+    text = re.sub(r'(^|\n)\s{0,3}>\s?', r'\1', text)
+    text = re.sub(r'(^|\n)\s*[-*+]\s+', r'\1', text)
+    text = re.sub(r'(^|\n)\s*\d+\.\s+', r'\1', text)
+    text = re.sub(r'[*_~>#-]+', '', text)
+    return re.sub(r'\s+', ' ', text).strip()
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -65,8 +80,8 @@ class ArticleCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         author = self.context['request'].user
-        # 自动生成摘要（取正文前200字符）
-        summary = validated_data.get('content', '')[:200]
+        # 自动生成摘要（从 Markdown 原文提取纯文本）
+        summary = markdown_to_summary_text(validated_data.get('content', ''))[:200]
         validated_data['summary'] = summary
         validated_data['author'] = author
         validated_data['status'] = 'published'
@@ -75,5 +90,5 @@ class ArticleCreateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         # 更新时重新生成摘要
         if 'content' in validated_data:
-            validated_data['summary'] = validated_data['content'][:200]
+            validated_data['summary'] = markdown_to_summary_text(validated_data['content'])[:200]
         return super().update(instance, validated_data)

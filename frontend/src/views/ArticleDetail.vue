@@ -1,9 +1,10 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { getArticle, deleteArticle } from '@/api/articles'
 import { getComments, createComment, deleteComment } from '@/api/comments'
+import { renderMarkdown } from '@/utils/markdown'
 
 const route = useRoute()
 const router = useRouter()
@@ -17,6 +18,8 @@ const submitting = ref(false)
 
 // Delete confirmation
 const showDeleteConfirm = ref(false)
+
+const renderedContent = computed(() => renderMarkdown(article.value?.content || ''))
 
 async function fetchArticle() {
   loading.value = true
@@ -106,7 +109,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="article-content" v-html="article.content"></div>
+      <div class="article-content markdown-body" v-html="renderedContent"></div>
 
       <!-- Comments section -->
       <div class="comments-section">
@@ -246,13 +249,99 @@ onMounted(() => {
   border-bottom: 1px solid var(--c-border);
 }
 
-.article-content :deep(p) {
+.markdown-body :deep(h1),
+.markdown-body :deep(h2),
+.markdown-body :deep(h3),
+.markdown-body :deep(h4) {
+  margin: 1.35rem 0 0.65rem;
+  line-height: 1.3;
+}
+
+.markdown-body :deep(h1) {
+  font-size: 1.85rem;
+}
+
+.markdown-body :deep(h2) {
+  font-size: 1.55rem;
+}
+
+.markdown-body :deep(h3) {
+  font-size: 1.25rem;
+}
+
+.markdown-body :deep(p) {
   margin: 0.85rem 0;
 }
 
-.article-content :deep(img) {
+.markdown-body :deep(ul),
+.markdown-body :deep(ol) {
+  padding-left: 1.5rem;
+  margin: 0.85rem 0;
+}
+
+.markdown-body :deep(li) {
+  margin: 0.28rem 0;
+}
+
+.markdown-body :deep(blockquote) {
+  margin: 1rem 0;
+  padding: 0.2rem 1rem;
+  border-left: 3px solid var(--c-primary);
+  color: var(--c-text-secondary);
+  background: var(--c-primary-soft);
+  border-radius: 0 6px 6px 0;
+}
+
+.markdown-body :deep(code) {
+  padding: 0.12rem 0.35rem;
+  border-radius: 4px;
+  background: var(--c-bg-soft);
+  border: 1px solid var(--c-border);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 0.92em;
+}
+
+.markdown-body :deep(pre) {
+  overflow-x: auto;
+  padding: 1rem;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  background: #111827;
+  color: #e5e7eb;
+}
+
+.markdown-body :deep(pre code) {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+}
+
+.markdown-body :deep(a) {
+  overflow-wrap: anywhere;
+}
+
+.markdown-body :deep(img) {
   max-width: 100%;
   border-radius: var(--radius);
+}
+
+.markdown-body :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  display: block;
+  overflow-x: auto;
+}
+
+.markdown-body :deep(th),
+.markdown-body :deep(td) {
+  border: 1px solid var(--c-border);
+  padding: 0.55rem 0.7rem;
+}
+
+.markdown-body :deep(th) {
+  background: var(--c-bg-soft);
 }
 
 .comments-section {
