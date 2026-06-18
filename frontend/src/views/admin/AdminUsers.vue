@@ -187,7 +187,7 @@ onMounted(fetchUsers)
   padding: 0.4rem 0.7rem;
   border: 1px solid var(--c-border);
   border-radius: 6px;
-  background: #fff;
+  background: var(--c-bg-card);
   cursor: pointer;
 }
 

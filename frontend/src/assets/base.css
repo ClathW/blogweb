@@ -18,9 +18,41 @@
   --c-success-soft: #dcfce7;
   --c-warning: #d97706;
   --c-warning-soft: #fef3c7;
+  --c-bg-glow-primary: rgba(219, 234, 254, 0.78);
+  --c-bg-glow-accent: rgba(224, 231, 255, 0.7);
+  --c-grid-line: rgba(31, 41, 51, 0.035);
   --radius: 8px;
   --shadow: 0 10px 30px rgba(31, 41, 51, 0.07);
   --shadow-md: 0 16px 46px rgba(31, 41, 51, 0.11);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-bg: #111827;
+    --c-bg-soft: #172033;
+    --c-bg-card: rgba(31, 41, 55, 0.88);
+    --c-text: #e5e7eb;
+    --c-text-secondary: #b6c2d1;
+    --c-text-muted: #8b98aa;
+    --c-primary: #60a5fa;
+    --c-primary-hover: #93c5fd;
+    --c-primary-soft: rgba(37, 99, 235, 0.22);
+    --c-accent: #a78bfa;
+    --c-accent-soft: rgba(124, 58, 237, 0.2);
+    --c-border: rgba(148, 163, 184, 0.22);
+    --c-border-strong: rgba(203, 213, 225, 0.24);
+    --c-danger: #f87171;
+    --c-danger-soft: rgba(220, 38, 38, 0.18);
+    --c-success: #4ade80;
+    --c-success-soft: rgba(22, 163, 74, 0.18);
+    --c-warning: #fbbf24;
+    --c-warning-soft: rgba(217, 119, 6, 0.2);
+    --c-bg-glow-primary: rgba(37, 99, 235, 0.18);
+    --c-bg-glow-accent: rgba(79, 70, 229, 0.16);
+    --c-grid-line: rgba(226, 232, 240, 0.045);
+    --shadow: 0 12px 34px rgba(0, 0, 0, 0.26);
+    --shadow-md: 0 18px 50px rgba(0, 0, 0, 0.34);
+  }
 }
 
 *,
@@ -34,8 +66,8 @@ body {
   min-height: 100vh;
   color: var(--c-text);
   background:
-    linear-gradient(135deg, rgba(219, 234, 254, 0.78), transparent 34%),
-    linear-gradient(315deg, rgba(224, 231, 255, 0.7), transparent 30%),
+    linear-gradient(135deg, var(--c-bg-glow-primary), transparent 34%),
+    linear-gradient(315deg, var(--c-bg-glow-accent), transparent 30%),
     var(--c-bg);
   line-height: 1.7;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
@@ -50,7 +82,7 @@ body::before {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background-image: linear-gradient(rgba(31, 41, 51, 0.035) 1px, transparent 1px);
+  background-image: linear-gradient(var(--c-grid-line) 1px, transparent 1px);
   background-size: 100% 42px;
   mask-image: linear-gradient(to bottom, black, transparent 78%);
 }
