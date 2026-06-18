@@ -29,23 +29,16 @@ check_deps() {
     fi
 }
 
-# 首次运行自动初始化
+# 每次启动自动检查
 auto_init() {
-    # 后端：安装依赖 + 迁移
-    if [ ! -f "$SCRIPT_DIR/backend/db.sqlite3" ]; then
-        echo "🔧 首次运行，初始化数据库..."
-        cd "$SCRIPT_DIR/backend"
-        uv sync --quiet 2>/dev/null
-        uv run python manage.py migrate --run-syncdb 2>/dev/null
-        echo ""
-        echo "创建默认管理员 admin/admin123..."
-        uv run python manage.py initadmin
-        cd "$SCRIPT_DIR"
-    fi
+    cd "$SCRIPT_DIR/backend"
+    uv sync --quiet 2>/dev/null
+    uv run python manage.py migrate --run-syncdb 2>/dev/null
+    uv run python manage.py initadmin 2>/dev/null
+    cd "$SCRIPT_DIR"
 
-    # 前端：安装依赖
     if [ ! -d "$SCRIPT_DIR/frontend/node_modules" ]; then
-        echo "🔧 安装前端依赖..."
+        echo "安装前端依赖..."
         cd "$SCRIPT_DIR/frontend"
         npm install --silent
         cd "$SCRIPT_DIR"
